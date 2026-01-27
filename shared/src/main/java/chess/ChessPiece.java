@@ -53,4 +53,14 @@ public class ChessPiece {
         // TODO: FIX THIS
         throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public boolean equals(ChessPiece object) {
+        if (this.getTeamColor() == object.getTeamColor() && this.getPieceType() == object.getPieceType()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
