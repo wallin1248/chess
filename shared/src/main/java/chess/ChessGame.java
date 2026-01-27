@@ -9,16 +9,16 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-
-    public ChessGame() {
-
+    private TeamColor teamTurn;
+    public ChessGame(TeamColor teamTurn) {
+        this.teamTurn = teamTurn;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.teamTurn;
     }
 
     /**
@@ -27,6 +27,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
+        this.teamTurn = team;
         throw new RuntimeException("Not implemented");
     }
 
@@ -46,6 +47,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        // TODO: Implement this
         throw new RuntimeException("Not implemented");
     }
 
@@ -56,6 +58,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        // TODO: Implement this
         throw new RuntimeException("Not implemented");
     }
 
@@ -66,6 +69,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        // TODO
         throw new RuntimeException("Not implemented");
     }
 
@@ -76,6 +80,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        // TODO
         throw new RuntimeException("Not implemented");
     }
 
@@ -87,6 +92,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        // TODO
         throw new RuntimeException("Not implemented");
     }
 
@@ -96,6 +102,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
+        // TODO
         throw new RuntimeException("Not implemented");
     }
 
@@ -105,6 +112,7 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
+        // TODO
         throw new RuntimeException("Not implemented");
     }
 }
