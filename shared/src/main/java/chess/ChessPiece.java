@@ -10,7 +10,7 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    private ChessGame.TeamColor pieceColor;
+    private final ChessGame.TeamColor pieceColor;
     private PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
@@ -41,6 +41,21 @@ public class ChessPiece {
     public PieceType getPieceType() { return this.type; }
 
     /**
+     * Helper function that calculates the adjacent squares of a piece
+     * */
+    private Collection<ChessMove> adjacentSquares(ChessPosition position) {
+        Collection<ChessMove> legalMoves;
+        // Check if we are on the top of the board
+        if (position.getRow() >= 7) {
+            // Add the square above
+            ChessMove chessMove = new ChessMove(position, null, null);
+            legalMoves.add(chessMove);
+        }
+
+    }
+
+
+    /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
@@ -48,8 +63,14 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        // TODO: FIX THIS
-        throw new RuntimeException("Not implemented");
+        // Make the variable that will contain the chess moves
+        Collection<ChessMove> legalMoves;
+
+        // Check what piece is at myPosition
+        if (board.getPiece(myPosition).getPieceType() == PieceType.KING) {
+            legalMoves.add(adjacent);
+        }
+        return legalMoves;
     }
 
     /**
