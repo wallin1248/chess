@@ -42,19 +42,19 @@ public class ChessMove {
     /**
      * Override the equals command for this function specifically.
      *
-     * @return true if both moves start and end in the same positions and have the same promotions
-     *
+     * @return true if both moves start and end in the same positions
+     * and promote to the same piece.
      */
     @Override
     public boolean equals(Object otherMove) {
         // If both are the same reference, return true
-        if (this == otherMove) { return true; }
+        if (this == (ChessMove) otherMove) { return true; }
 
-        // Check if both have the same color and piece type
+        // Check if both have the same start, end, and promotion
         ChessMove chessMove = (ChessMove) otherMove;
-        return this.startPosition == ((ChessMove) otherMove).startPosition
-                && this.endPosition == chessMove.endPosition
-                && this.promotionPiece == chessMove.promotionPiece;
+        return (this.getStartPosition() == chessMove.getStartPosition())
+                && (this.getEndPosition() == chessMove.getEndPosition())
+                && (this.getPromotionPiece() == chessMove.getPromotionPiece());
     }
 
     /**
