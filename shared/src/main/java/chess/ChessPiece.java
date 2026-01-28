@@ -44,7 +44,7 @@ public class ChessPiece {
      * Helper function that calculates the adjacent squares of a piece
      * */
     private Collection<ChessMove> adjacentSquares(ChessPosition position) {
-        Collection<ChessMove> legalMoves;
+        Collection<ChessMove> legalMoves = null;
         // Check if we are on the top of the board
         if (position.getRow() >= 7) {
             // Add the square above
@@ -52,8 +52,48 @@ public class ChessPiece {
             legalMoves.add(chessMove);
         }
 
+        return legalMoves;
     }
 
+    /**
+     * Helper function that calculates horizontal moves of a piece
+     * */
+    private Collection<ChessMove> horizontalSquares(ChessPosition position) {
+        Collection<ChessMove> legalMoves = null;
+        return legalMoves;
+    }
+
+    /**
+     * Helper function that calculates horizontal moves of a piece
+     * */
+    private Collection<ChessMove> verticalSuares(ChessPosition position) {
+        Collection<ChessMove> legalMoves = null;
+        return legalMoves;
+    }
+
+    /**
+     * Helper function that calculates horizontal moves of a piece
+     * */
+    private Collection<ChessMove> diagonalSquares(ChessPosition position) {
+        Collection<ChessMove> legalMoves = null;
+        return legalMoves;
+    }
+
+    /**
+     * Helper function that calculates horizontal moves of a piece
+     * */
+    private Collection<ChessMove> LShape(ChessPosition position) {
+        Collection<ChessMove> legalMoves = null;
+        return legalMoves;
+    }
+
+    /**
+     * Helper function that calculates horizontal moves of a piece
+     * */
+    private Collection<ChessMove> forwardSquare(ChessPosition position) {
+        Collection<ChessMove> legalMoves = null;
+        return legalMoves;
+    }
 
     /**
      * Calculates all the positions a chess piece can move to
@@ -65,10 +105,25 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // Make the variable that will contain the chess moves
         Collection<ChessMove> legalMoves;
-
         // Check what piece is at myPosition
         if (board.getPiece(myPosition).getPieceType() == PieceType.KING) {
-            legalMoves.add(adjacent);
+            legalMoves = (adjacentSquares(myPosition));
+        } else if (board.getPiece(myPosition).getPieceType() == PieceType.QUEEN) {
+            legalMoves = (horizontalSquares(myPosition));
+            legalMoves.addAll(verticalSuares(myPosition));
+            legalMoves.addAll(diagonalSquares(myPosition));
+        } else if (board.getPiece(myPosition).getPieceType() == PieceType.ROOK) {
+            legalMoves = (horizontalSquares(myPosition));
+            legalMoves.addAll(verticalSuares(myPosition));
+        } else if (board.getPiece(myPosition).getPieceType() == PieceType.BISHOP) {
+            legalMoves = (diagonalSquares(myPosition));
+        } else if (board.getPiece(myPosition).getPieceType() == PieceType.KNIGHT) {
+            legalMoves = (LShape(myPosition));
+        } else if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN) {
+            legalMoves = forwardSquare(myPosition);
+        } else {
+            legalMoves = null;
+            throw new RuntimeException("Piece doesn't have a type");
         }
         return legalMoves;
     }
