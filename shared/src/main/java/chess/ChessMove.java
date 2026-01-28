@@ -70,8 +70,8 @@ public class ChessMove {
      */
     @Override
     public String toString() {
-        return "ChessMove{Start: " + this.startPosition
-                + ", End: " + this.endPosition
+        return "ChessMove{Start:" + this.startPosition
+                + ", End:" + this.endPosition
                 + ", Promote:" + this.promotionPiece
                 + "}";
     }

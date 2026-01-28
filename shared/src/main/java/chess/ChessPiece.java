@@ -173,6 +173,8 @@ public class ChessPiece {
          */
     @Override
     public String toString() {
-        return "ChessPiece{" + this.getPieceType() + ", " + this.getTeamColor() + "}";
+        return "ChessPiece{Type:" + this.getPieceType() +
+                ", Color:" + this.getTeamColor() +
+                "}";
     }
 }
