@@ -133,34 +133,46 @@ public class ChessPiece {
         Set<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Moves to the up-left
         for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
-            if (col + i > 8 || row - i < 1) { break; }  // Ensure we stay on the board
+            if (row + i > 8 || col - i < 1 ) { break; }  // Ensure we stay on the board
             ChessPosition newPos = new ChessPosition(row + i, col - i);
-            if (board.getPiece(newPos).getTeamColor() != color) {
+            if (board.getPiece(newPos) == null) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
+            } else if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+                break;
             } else { break; }
         }
         // Moves to the down-left
         for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
-            if (col - i < 1 || row - i < 1) { break; }  // Ensure we stay on the board
+            if (row - i < 1 || col - i < 1) { break; }  // Ensure we stay on the board
             ChessPosition newPos = new ChessPosition(row - i, col - i);
-            if (board.getPiece(newPos).getTeamColor() != color) {
+            if (board.getPiece(newPos) == null) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
+            } else if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+                break;
             } else { break; }
         }
         // Moves to the down-right
         for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
-            if (col - i < 1 || row + i > 8) { break; }  // Ensure we stay on the board
+            if (row - i < 1 || col + i > 8) { break; }  // Ensure we stay on the board
             ChessPosition newPos = new ChessPosition(row - i, col + i);
-            if (board.getPiece(newPos).getTeamColor() != color) {
+            if (board.getPiece(newPos) == null) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
+            } else if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+                break;
             } else { break; }
         }
         // Moves to the up-right
         for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
-            if (col + i > 8 || row + i > 8) { break; }  // Ensure we stay on the board
+            if (row + i > 8 || col + i > 8) { break; }  // Ensure we stay on the board
             ChessPosition newPos = new ChessPosition(row + i, col + i);
-            if (board.getPiece(newPos).getTeamColor() != color) {
+            if (board.getPiece(newPos) == null) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
+            } else if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+                break;
             } else { break; }
         }
 
