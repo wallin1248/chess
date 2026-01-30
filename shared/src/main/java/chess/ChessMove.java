@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 import static java.util.Objects.hash;
 
 /**
@@ -39,30 +41,18 @@ public class ChessMove {
      */
     public ChessPiece.PieceType getPromotionPiece() { return this.promotionPiece; }
 
-    /**
-     * Override the equals command for this function specifically.
-     *
-     * @return true if both moves start and end in the same positions
-     * and promote to the same piece.
-     */
     @Override
-    public boolean equals(Object otherMove) {
-        // If both are the same reference, return true
-        if (this == (ChessMove) otherMove) { return true; }
-
-        // Check if both have the same start, end, and promotion
-        ChessMove chessMove = (ChessMove) otherMove;
-        return (this.getStartPosition() == chessMove.getStartPosition())
-                && (this.getEndPosition() == chessMove.getEndPosition())
-                && (this.getPromotionPiece() == chessMove.getPromotionPiece());
+    public boolean equals(Object object) {
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ChessMove chessMove = (ChessMove) object;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
-    /**
-     * Override the hashcode command
-     * */
     @Override
     public int hashCode() {
-        return hash(this.startPosition, this.endPosition, this.promotionPiece);
+        return hash(startPosition, endPosition, promotionPiece);
     }
 
     /**

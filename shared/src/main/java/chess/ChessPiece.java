@@ -1,6 +1,6 @@
 package chess;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Represents a single chess piece
@@ -43,7 +43,7 @@ public class ChessPiece {
     /**
      * Helper function that calculates the adjacent squares of a piece
      * */
-    private Collection<ChessMove> adjacentSquares(ChessBoard board, ChessPosition pos) {
+    private Set<ChessMove> adjacentSquares(ChessBoard board, ChessPosition pos) {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
@@ -51,7 +51,7 @@ public class ChessPiece {
         int row_down = row - 1;
         int col_right = col + 1;
         int col_left = col - 1;
-        Collection<ChessMove> legalMoves = null;
+        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Move directly up
         if (row != 7) { // Broken into 2 if statements to not lookup outside of the chessboard
             if (board.getPiece(new ChessPosition(row_up, col)).getTeamColor() != color) {
@@ -123,20 +123,20 @@ public class ChessPiece {
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> horizontalSquares(ChessBoard board, ChessPosition pos) {
+    private Set<ChessMove> horizontalSquares(ChessBoard board, ChessPosition pos) {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        Collection<ChessMove> legalMoves = null;
+        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Moves to the left
-        for (int i = row - 1; i >= 0; i --) {
+        for (int i = row - 1; i >= 1; i --) {
             ChessPosition newPos = new ChessPosition(i, col);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
             } else { break; }
         }
         // Moves to the right
-        for (int i = row + 1; i <= 7; i ++) {
+        for (int i = row + 1; i <= 8; i ++) {
             ChessPosition newPos = new ChessPosition(i, col);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
@@ -149,20 +149,20 @@ public class ChessPiece {
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> verticalSquares(ChessBoard board, ChessPosition pos) {
+    private Set<ChessMove> verticalSquares(ChessBoard board, ChessPosition pos) {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        Collection<ChessMove> legalMoves = null;
+        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Moves downward
-        for (int i = col - 1; i >= 0; i --) {
+        for (int i = col - 1; i >= 1; i --) {
             ChessPosition newPos = new ChessPosition(row, i);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
             } else { break; }
         }
         // Moves upward
-        for (int i = col + 1; i <= 7; i ++) {
+        for (int i = col + 1; i <= 8; i ++) {
             ChessPosition newPos = new ChessPosition(row, i);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
@@ -175,38 +175,38 @@ public class ChessPiece {
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> diagonalSquares(ChessBoard board, ChessPosition pos) {
+    private Set<ChessMove> diagonalSquares(ChessBoard board, ChessPosition pos) {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        Collection<ChessMove> legalMoves = null;
+        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Moves to the up-left
-        for (int i = 1; i <= 7; i ++) {
-            if (col + i > 7 || row - i < 0) { break; }  // Ensure we stay on the board
+        for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
+            if (col + i > 8 || row - i < 1) { break; }  // Ensure we stay on the board
             ChessPosition newPos = new ChessPosition(row + i, col - i);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
             } else { break; }
         }
         // Moves to the down-left
-        for (int i = 1; i <= 7; i ++) {
-            if (col - i < 0 || row - i < 0) { break; }  // Ensure we stay on the board
+        for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
+            if (col - i < 1 || row - i < 1) { break; }  // Ensure we stay on the board
             ChessPosition newPos = new ChessPosition(row - i, col - i);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
             } else { break; }
         }
         // Moves to the down-right
-        for (int i = 1; i <= 7; i ++) {
-            if (col - i < 0 || row + i > 7) { break; }  // Ensure we stay on the board
+        for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
+            if (col - i < 1 || row + i > 8) { break; }  // Ensure we stay on the board
             ChessPosition newPos = new ChessPosition(row - i, col + i);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
             } else { break; }
         }
         // Moves to the up-right
-        for (int i = 1; i <= 7; i ++) {
-            if (col + i > 7 || row + i > 7) { break; }  // Ensure we stay on the board
+        for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
+            if (col + i > 8 || row + i > 8) { break; }  // Ensure we stay on the board
             ChessPosition newPos = new ChessPosition(row + i, col + i);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
@@ -219,52 +219,52 @@ public class ChessPiece {
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> LShapeSquares(ChessBoard board, ChessPosition pos) {
+    private Set<ChessMove> LShapeSquares(ChessBoard board, ChessPosition pos) {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        Collection<ChessMove> legalMoves = null;
+        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
 
         // Upward knight jumps
-        if (col < 6) {  // Ensure we stay on the board
-            if (row > 0) {
+        if (col <= 6) {  // Ensure we stay on the board
+            if (row >= 0) {
                 ChessPosition newPos = new ChessPosition(row - 1, col + 2);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
-            if (row < 7) {
+            if (row <= 7) {
                 ChessPosition newPos = new ChessPosition(row + 1, col + 2);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
         }
         // Leftward knight jumps
-        if (row > 1) {  // Ensure we stay on the board
-            if (col > 0) {
+        if (row >= 1) {  // Ensure we stay on the board
+            if (col >= 0) {
                 ChessPosition newPos = new ChessPosition(row - 2, col - 1);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
-            if (col < 7) {
+            if (col <= 7) {
                 ChessPosition newPos = new ChessPosition(row - 2, col - 1);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
         }
         // Downward knight jumps
-        if (col > 1) {  // Ensure we stay on the board
-            if (row > 0) {
+        if (col >= 1) {  // Ensure we stay on the board
+            if (row >= 0) {
                 ChessPosition newPos = new ChessPosition(row - 1, col - 2);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
-            if (row < 7) {
+            if (row <= 7) {
                 ChessPosition newPos = new ChessPosition(row + 1, col - 2);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
         }
         // Rightward knight jumps
-        if (row < 6) {  // Ensure we stay on the board
-            if (col > 0) {
+        if (row <= 6) {  // Ensure we stay on the board
+            if (col >= 0) {
                 ChessPosition newPos = new ChessPosition(row + 2, col - 1);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
-            if (col < 7) {
+            if (col <= 7) {
                 ChessPosition newPos = new ChessPosition(row + 2, col - 1);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
@@ -313,47 +313,21 @@ public class ChessPiece {
         return legalMoves;
     }
 
-    /**
-     * Override the equals command for this function specifically.
-     *
-     * @return true if both pieces are the same type and color, false otherwise
-     *
-     */
     @Override
-    public boolean equals(Object otherPiece) {
-        // If both are the same reference, return true
-        if (this == otherPiece) { return true; }
-
-        // Check if both have the same color and piece type
-        ChessPiece chessPiece = (ChessPiece) otherPiece;
-        return this.getTeamColor() == chessPiece.getTeamColor() && this.getPieceType() == chessPiece.getPieceType();
+    public boolean equals(Object object) {
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) object;
+        return teamColor == that.teamColor && type == that.type;
     }
 
-    /**
-     * Override the hashcode command
-     * */
     @Override
     public int hashCode() {
-        int hash = 0;
-        if (this.pieceColor == ChessGame.TeamColor.WHITE) {
-            hash += 6;
-        }
-
-        if (this.type == PieceType.PAWN) {
-            hash += 1;
-        } else if (this.type == PieceType.KNIGHT) {
-            hash += 2;
-        } else if (this.type == PieceType.BISHOP) {
-            hash += 3;
-        } else if (this.type == PieceType.ROOK) {
-            hash += 4;
-        } else if (this.type == PieceType.QUEEN) {
-            hash += 5;
-        }
-
-        return hash;
+        return Objects.hash(teamColor, type);
     }
-        /**
+
+    /**
          * Create the print method for this object.
          */
     @Override
