@@ -269,6 +269,7 @@ public class ChessPiece {
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
         }
+
         return legalMoves;
     }
 
@@ -279,7 +280,59 @@ public class ChessPiece {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
+        int direction = 0;
+        Set<ChessPiece.PieceType> promotion = new HashSet<>();
         Set<ChessMove> legalMoves = new HashSet<ChessMove>();
+
+        // White moves up the board and black moves down the board
+        if (color == ChessGame.TeamColor.WHITE) {
+            direction = 1;
+        } else {
+            direction = -1;
+        }
+
+        // Find the possible promotions
+        if ((row + direction != 8 && color == ChessGame.TeamColor.WHITE) ||
+                (row + direction != 1 && color == ChessGame.TeamColor.BLACK)) {
+            promotion.add(null);
+        } else {
+            promotion.add(PieceType.QUEEN);
+            promotion.add(PieceType.ROOK);
+            promotion.add(PieceType.KNIGHT);
+            promotion.add(PieceType.BISHOP);
+        }
+
+        // Check non-capturing forward one square
+        ChessPosition forwardPos = new ChessPosition(row + direction, col);
+        if (board.getPiece(forwardPos) == null) {
+            for (ChessPiece.PieceType p : promotion) {
+                legalMoves.add(new ChessMove(pos, forwardPos, p));
+            }
+            // Check forward 2 squares if on homerow
+            if (color == ChessGame.TeamColor.WHITE && row == 2 ||
+                    color == ChessGame.TeamColor.BLACK && row == 7) {
+                ChessPosition forwardPos2 = new ChessPosition(row + 2 * direction, col);
+                if (board.getPiece(forwardPos2) == null) {
+                    for (ChessPiece.PieceType p : promotion) {
+                        legalMoves.add(new ChessMove(pos, forwardPos2, p));
+                    }
+                }
+            }
+        }
+        // Check capturing
+        ChessPosition leftCapture = new ChessPosition(row + direction, col - 1);
+        if (board.getPiece(leftCapture).getTeamColor() != color) {
+            for (ChessPiece.PieceType p : promotion) {
+                legalMoves.add(new ChessMove(pos, leftCapture, p));
+            }
+        }
+        ChessPosition rightCapture = new ChessPosition(row + direction, col + 1);
+        if (board.getPiece(rightCapture).getTeamColor() != color) {
+            for (ChessPiece.PieceType p : promotion) {
+                legalMoves.add(new ChessMove(pos, rightCapture, p));
+            }
+        }
+
         return legalMoves;
     }
 
