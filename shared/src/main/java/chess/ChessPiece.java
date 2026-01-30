@@ -47,73 +47,22 @@ public class ChessPiece {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        int row_up = row + 1;
-        int row_down = row - 1;
-        int col_right = col + 1;
-        int col_left = col - 1;
+        ArrayList<ChessPosition> possibleDirections = new ArrayList<>();
+        // Find all the possible adjacent directions
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++){
+                if (row + i >= 1 && row + i <= 8 && col + j >= 1 && col + j <= 8 && (i != 0 || j != 0)) {
+                    possibleDirections.add(new ChessPosition(row + i, col + j));
+                }
+            }
+        }
         Set<ChessMove> legalMoves = new HashSet<ChessMove>();
-        // Move directly up
-        if (row != 7) { // Broken into 2 if statements to not lookup outside of the chessboard
-            if (board.getPiece(new ChessPosition(row_up, col)).getTeamColor() != color) {
-                // Add the square above
-                ChessMove chessMove = new ChessMove(pos, new ChessPosition(row_up, col), null);
-                legalMoves.add(chessMove);
-            }
-        }
-        // Move directly left
-        if (col != 0) { // Broken into 2 if statements to not lookup outside of the chessboard
-            if (board.getPiece(new ChessPosition(row, col_left)).getTeamColor() != color) {
-                // Add the square above
-                ChessMove chessMove = new ChessMove(pos, new ChessPosition(row, col_left), null);
-                legalMoves.add(chessMove);
-            }
-        }
-        // Move directly down
-        if (row != 0) { // Broken into 2 if statements to not lookup outside of the chessboard
-            if (board.getPiece(new ChessPosition(row_down, col)).getTeamColor() != color) {
-                // Add the square above
-                ChessMove chessMove = new ChessMove(pos, new ChessPosition(row_down, col), null);
-                legalMoves.add(chessMove);
-            }
-        }
-        // Move directly right
-        if (col != 7) { // Broken into 2 if statements to not lookup outside of the chessboard
-            if (board.getPiece(new ChessPosition(row,col_right)).getTeamColor() != color) {
-                // Add the square above
-                ChessMove chessMove = new ChessMove(pos, new ChessPosition(row, col_right), null);
-                legalMoves.add(chessMove);
-            }
-        }
-        // Move up-left
-        if (row != 7 && col != 0) { // Broken into 2 if statements to not lookup outside of the chessboard
-            if (board.getPiece(new ChessPosition(row_up, col_left)).getTeamColor() != color) {
-                // Add the square above
-                ChessMove chessMove = new ChessMove(pos, new ChessPosition(row_up, col_left), null);
-                legalMoves.add(chessMove);
-            }
-        }
-        // Move down-left
-        if (row != 0 && col != 0) { // Broken into 2 if statements to not lookup outside of the chessboard
-            if (board.getPiece(new ChessPosition(row_down, col_left)).getTeamColor() != color) {
-                // Add the square above
-                ChessMove chessMove = new ChessMove(pos, new ChessPosition(row_down, col_left), null);
-                legalMoves.add(chessMove);
-            }
-        }
-        // Move down-right
-        if (row != 0 && col != 7) { // Broken into 2 if statements to not lookup outside of the chessboard
-            if (board.getPiece(new ChessPosition(row_down, col_right)).getTeamColor() != color) {
-                // Add the square above
-                ChessMove chessMove = new ChessMove(pos, new ChessPosition(row_down, col_right), null);
-                legalMoves.add(chessMove);
-            }
-        }
         // Move up-right
-        if (row != 7 && col != 7) { // Broken into 2 if statements to not lookup outside of the chessboard
-            if (board.getPiece(new ChessPosition(row_up,col_right)).getTeamColor() != color) {
-                // Add the square above
-                ChessMove chessMove = new ChessMove(pos, new ChessPosition(row_up, col_right), null);
-                legalMoves.add(chessMove);
+        for (ChessPosition dir : possibleDirections) {
+            if (board.getPiece(dir) == null) {
+                legalMoves.add(new ChessMove(pos, dir, null));
+            } else if (board.getPiece(dir).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, dir, null));
             }
         }
 
