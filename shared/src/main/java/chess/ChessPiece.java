@@ -123,16 +123,52 @@ public class ChessPiece {
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> horizontalSquares(ChessPosition position) {
+    private Collection<ChessMove> horizontalSquares(ChessBoard board, ChessPosition pos) {
+        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
+        int row = pos.getRow();
+        int col = pos.getColumn();
         Collection<ChessMove> legalMoves = null;
+        // Moves to the left
+        for (int i = row - 1; i >= 0; i --) {
+            ChessPosition newPos = new ChessPosition(i, col);
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+        }
+        // Moves to the right
+        for (int i = row + 1; i <= 7; i ++) {
+            ChessPosition newPos = new ChessPosition(i, col);
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+        }
+
         return legalMoves;
     }
 
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> verticalSuares(ChessPosition position) {
+    private Collection<ChessMove> verticalSquares(ChessBoard board, ChessPosition pos) {
+        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
+        int row = pos.getRow();
+        int col = pos.getColumn();
         Collection<ChessMove> legalMoves = null;
+        // Moves downward
+        for (int i = col - 1; i >= 0; i --) {
+            ChessPosition newPos = new ChessPosition(row, i);
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+        }
+        // Moves upward
+        for (int i = col + 1; i <= 7; i ++) {
+            ChessPosition newPos = new ChessPosition(row, i);
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+        }
+
         return legalMoves;
     }
 
