@@ -133,14 +133,14 @@ public class ChessPiece {
             ChessPosition newPos = new ChessPosition(i, col);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
-            }
+            } else { break; }
         }
         // Moves to the right
         for (int i = row + 1; i <= 7; i ++) {
             ChessPosition newPos = new ChessPosition(i, col);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
-            }
+            } else { break; }
         }
 
         return legalMoves;
@@ -159,14 +159,14 @@ public class ChessPiece {
             ChessPosition newPos = new ChessPosition(row, i);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
-            }
+            } else { break; }
         }
         // Moves upward
         for (int i = col + 1; i <= 7; i ++) {
             ChessPosition newPos = new ChessPosition(row, i);
             if (board.getPiece(newPos).getTeamColor() != color) {
                 legalMoves.add(new ChessMove(pos, newPos, null));
-            }
+            } else { break; }
         }
 
         return legalMoves;
@@ -175,23 +175,107 @@ public class ChessPiece {
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> diagonalSquares(ChessPosition position) {
+    private Collection<ChessMove> diagonalSquares(ChessBoard board, ChessPosition pos) {
+        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
+        int row = pos.getRow();
+        int col = pos.getColumn();
         Collection<ChessMove> legalMoves = null;
+        // Moves to the up-left
+        for (int i = 1; i <= 7; i ++) {
+            if (col + i > 7 || row - i < 0) { break; }  // Ensure we stay on the board
+            ChessPosition newPos = new ChessPosition(row + i, col - i);
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            } else { break; }
+        }
+        // Moves to the down-left
+        for (int i = 1; i <= 7; i ++) {
+            if (col - i < 0 || row - i < 0) { break; }  // Ensure we stay on the board
+            ChessPosition newPos = new ChessPosition(row - i, col - i);
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            } else { break; }
+        }
+        // Moves to the down-right
+        for (int i = 1; i <= 7; i ++) {
+            if (col - i < 0 || row + i > 7) { break; }  // Ensure we stay on the board
+            ChessPosition newPos = new ChessPosition(row - i, col + i);
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            } else { break; }
+        }
+        // Moves to the up-right
+        for (int i = 1; i <= 7; i ++) {
+            if (col + i > 7 || row + i > 7) { break; }  // Ensure we stay on the board
+            ChessPosition newPos = new ChessPosition(row + i, col + i);
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            } else { break; }
+        }
+
         return legalMoves;
     }
 
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> LShape(ChessPosition position) {
+    private Collection<ChessMove> LShapeSquares(ChessBoard board, ChessPosition pos) {
+        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
+        int row = pos.getRow();
+        int col = pos.getColumn();
         Collection<ChessMove> legalMoves = null;
+
+        // Upward knight jumps
+        if (col < 6) {  // Ensure we stay on the board
+            if (row > 0) {
+                ChessPosition newPos = new ChessPosition(row - 1, col + 2);
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+            if (row < 7) {
+                ChessPosition newPos = new ChessPosition(row + 1, col + 2);
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+        }
+        // Leftward knight jumps
+        if (row > 1) {  // Ensure we stay on the board
+            if (col > 0) {
+                ChessPosition newPos = new ChessPosition(row - 2, col - 1);
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+            if (col < 7) {
+                ChessPosition newPos = new ChessPosition(row - 2, col - 1);
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+        }
+        // Downward knight jumps
+        if (col > 1) {  // Ensure we stay on the board
+            if (row > 0) {
+                ChessPosition newPos = new ChessPosition(row - 1, col - 2);
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+            if (row < 7) {
+                ChessPosition newPos = new ChessPosition(row + 1, col - 2);
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+        }
+        // Rightward knight jumps
+        if (row < 6) {  // Ensure we stay on the board
+            if (col > 0) {
+                ChessPosition newPos = new ChessPosition(row + 2, col - 1);
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+            if (col < 7) {
+                ChessPosition newPos = new ChessPosition(row + 2, col - 1);
+                legalMoves.add(new ChessMove(pos, newPos, null));
+            }
+        }
         return legalMoves;
     }
 
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> forwardSquare(ChessPosition position) {
+    private Collection<ChessMove> forwardSquare(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> legalMoves = null;
         return legalMoves;
     }
@@ -210,18 +294,18 @@ public class ChessPiece {
         if (board.getPiece(myPosition).getPieceType() == PieceType.KING) {
             legalMoves = (adjacentSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.QUEEN) {
-            legalMoves = (horizontalSquares(myPosition));
-            legalMoves.addAll(verticalSuares(myPosition));
-            legalMoves.addAll(diagonalSquares(myPosition));
+            legalMoves = (horizontalSquares(board, myPosition));
+            legalMoves.addAll(verticalSquares(board, myPosition));
+            legalMoves.addAll(diagonalSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.ROOK) {
-            legalMoves = (horizontalSquares(myPosition));
-            legalMoves.addAll(verticalSuares(myPosition));
+            legalMoves = (horizontalSquares(board, myPosition));
+            legalMoves.addAll(verticalSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.BISHOP) {
-            legalMoves = (diagonalSquares(myPosition));
+            legalMoves = (diagonalSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.KNIGHT) {
-            legalMoves = (LShape(myPosition));
+            legalMoves = (LShapeSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN) {
-            legalMoves = forwardSquare(myPosition);
+            legalMoves = forwardSquare(board, myPosition);
         } else {
             legalMoves = null;
             throw new RuntimeException("Piece doesn't have a type");
