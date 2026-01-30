@@ -226,46 +226,46 @@ public class ChessPiece {
         Set<ChessMove> legalMoves = new HashSet<ChessMove>();
 
         // Upward knight jumps
-        if (col <= 6) {  // Ensure we stay on the board
-            if (row >= 0) {
+        if (col + 2 <= 8) {  // Ensure we stay on the board
+            if (row - 1 >= 1) {
                 ChessPosition newPos = new ChessPosition(row - 1, col + 2);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
-            if (row <= 7) {
+            if (row + 1 <= 8) {
                 ChessPosition newPos = new ChessPosition(row + 1, col + 2);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
         }
         // Leftward knight jumps
-        if (row >= 1) {  // Ensure we stay on the board
-            if (col >= 0) {
+        if (row - 2 <= 1) {  // Ensure we stay on the board
+            if (col - 1 >= 1) {
                 ChessPosition newPos = new ChessPosition(row - 2, col - 1);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
-            if (col <= 7) {
-                ChessPosition newPos = new ChessPosition(row - 2, col - 1);
+            if (col + 1 <= 8) {
+                ChessPosition newPos = new ChessPosition(row - 2, col + 1);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
         }
         // Downward knight jumps
-        if (col >= 1) {  // Ensure we stay on the board
-            if (row >= 0) {
+        if (col - 2 >= 1) {  // Ensure we stay on the board
+            if (row - 1 >= 1) {
                 ChessPosition newPos = new ChessPosition(row - 1, col - 2);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
-            if (row <= 7) {
+            if (row + 1 <= 8) {
                 ChessPosition newPos = new ChessPosition(row + 1, col - 2);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
         }
         // Rightward knight jumps
-        if (row <= 6) {  // Ensure we stay on the board
-            if (col >= 0) {
+        if (row + 2 <= 8) {  // Ensure we stay on the board
+            if (col - 1 >= 1) {
                 ChessPosition newPos = new ChessPosition(row + 2, col - 1);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
-            if (col <= 7) {
-                ChessPosition newPos = new ChessPosition(row + 2, col - 1);
+            if (col + 1 <= 8) {
+                ChessPosition newPos = new ChessPosition(row + 2, col + 1);
                 legalMoves.add(new ChessMove(pos, newPos, null));
             }
         }
@@ -275,8 +275,11 @@ public class ChessPiece {
     /**
      * Helper function that calculates horizontal moves of a piece
      * */
-    private Collection<ChessMove> forwardSquare(ChessBoard board, ChessPosition position) {
-        Collection<ChessMove> legalMoves = null;
+    private Set<ChessMove> forwardSquare(ChessBoard board, ChessPosition pos) {
+        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
+        int row = pos.getRow();
+        int col = pos.getColumn();
+        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
         return legalMoves;
     }
 
@@ -289,7 +292,7 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // Make the variable that will contain the chess moves
-        Collection<ChessMove> legalMoves;
+        Collection<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Check what piece is at myPosition
         if (board.getPiece(myPosition).getPieceType() == PieceType.KING) {
             legalMoves = (adjacentSquares(board, myPosition));
