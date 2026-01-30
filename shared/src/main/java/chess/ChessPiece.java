@@ -2,6 +2,8 @@ package chess;
 
 import java.util.*;
 
+import static java.lang.Math.abs;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -172,50 +174,27 @@ public class ChessPiece {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
+        int[] knightDistances = new int[4];
+        knightDistances[0] = -2;
+        knightDistances[1] = -1;
+        knightDistances[2] = 1;
+        knightDistances[3] = 2;
+        ArrayList<ChessPosition> possibleDirections = new ArrayList<>();
+        // Find all the possible adjacent directions
+        for (int i : knightDistances) {
+            for (int j : knightDistances){
+                if (row + i >= 1 && row + i <= 8 && col + j >= 1 && col + j <= 8 && abs(i) != abs(j)) {
+                    possibleDirections.add(new ChessPosition(row + i, col + j));
+                }
+            }
+        }
         Set<ChessMove> legalMoves = new HashSet<ChessMove>();
-
-        // Upward knight jumps
-        if (col + 2 <= 8) {  // Ensure we stay on the board
-            if (row - 1 >= 1) {
-                ChessPosition newPos = new ChessPosition(row - 1, col + 2);
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            }
-            if (row + 1 <= 8) {
-                ChessPosition newPos = new ChessPosition(row + 1, col + 2);
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            }
-        }
-        // Leftward knight jumps
-        if (row - 2 <= 1) {  // Ensure we stay on the board
-            if (col - 1 >= 1) {
-                ChessPosition newPos = new ChessPosition(row - 2, col - 1);
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            }
-            if (col + 1 <= 8) {
-                ChessPosition newPos = new ChessPosition(row - 2, col + 1);
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            }
-        }
-        // Downward knight jumps
-        if (col - 2 >= 1) {  // Ensure we stay on the board
-            if (row - 1 >= 1) {
-                ChessPosition newPos = new ChessPosition(row - 1, col - 2);
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            }
-            if (row + 1 <= 8) {
-                ChessPosition newPos = new ChessPosition(row + 1, col - 2);
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            }
-        }
-        // Rightward knight jumps
-        if (row + 2 <= 8) {  // Ensure we stay on the board
-            if (col - 1 >= 1) {
-                ChessPosition newPos = new ChessPosition(row + 2, col - 1);
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            }
-            if (col + 1 <= 8) {
-                ChessPosition newPos = new ChessPosition(row + 2, col + 1);
-                legalMoves.add(new ChessMove(pos, newPos, null));
+        // Move up-right
+        for (ChessPosition dir : possibleDirections) {
+            if (board.getPiece(dir) == null) {
+                legalMoves.add(new ChessMove(pos, dir, null));
+            } else if (board.getPiece(dir).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, dir, null));
             }
         }
 
