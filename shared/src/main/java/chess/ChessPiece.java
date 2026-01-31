@@ -304,16 +304,24 @@ public class ChessPiece {
             }
         }
         // Check capturing
-        ChessPosition leftCapture = new ChessPosition(row + direction, col - 1);
-        if (board.getPiece(leftCapture).getTeamColor() != color) {
-            for (ChessPiece.PieceType p : promotion) {
-                legalMoves.add(new ChessMove(pos, leftCapture, p));
+        if (col > 1) {
+            ChessPosition leftCapture = new ChessPosition(row + direction, col - 1);
+            if (board.getPiece(leftCapture) != null) {
+                if (board.getPiece(leftCapture).getTeamColor() != color) {
+                    for (ChessPiece.PieceType p : promotion) {
+                        legalMoves.add(new ChessMove(pos, leftCapture, p));
+                    }
+                }
             }
         }
-        ChessPosition rightCapture = new ChessPosition(row + direction, col + 1);
-        if (board.getPiece(rightCapture).getTeamColor() != color) {
-            for (ChessPiece.PieceType p : promotion) {
-                legalMoves.add(new ChessMove(pos, rightCapture, p));
+        if (col < 8) {
+            ChessPosition rightCapture = new ChessPosition(row + direction, col + 1);
+            if (board.getPiece(rightCapture) != null) {
+                if (board.getPiece(rightCapture).getTeamColor() != color) {
+                    for (ChessPiece.PieceType p : promotion) {
+                        legalMoves.add(new ChessMove(pos, rightCapture, p));
+                    }
+                }
             }
         }
 
@@ -332,20 +340,20 @@ public class ChessPiece {
         Collection<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Check what piece is at myPosition
         if (board.getPiece(myPosition).getPieceType() == PieceType.KING) {
-            legalMoves = (adjacentSquares(board, myPosition));
+            legalMoves.addAll(adjacentSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.QUEEN) {
-            legalMoves = (horizontalSquares(board, myPosition));
+            legalMoves.addAll(horizontalSquares(board, myPosition));
             legalMoves.addAll(verticalSquares(board, myPosition));
             legalMoves.addAll(diagonalSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.ROOK) {
-            legalMoves = (horizontalSquares(board, myPosition));
+            legalMoves.addAll(horizontalSquares(board, myPosition));
             legalMoves.addAll(verticalSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.BISHOP) {
-            legalMoves = (diagonalSquares(board, myPosition));
+            legalMoves.addAll(diagonalSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.KNIGHT) {
-            legalMoves = (LShapeSquares(board, myPosition));
+            legalMoves.addAll(LShapeSquares(board, myPosition));
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN) {
-            legalMoves = forwardSquare(board, myPosition);
+            legalMoves.addAll(forwardSquare(board, myPosition));
         } else {
             legalMoves = null;
             throw new RuntimeException("Piece doesn't have a type");
