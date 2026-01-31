@@ -58,7 +58,7 @@ public class ChessPiece {
                 }
             }
         }
-        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
+        Set<ChessMove> legalMoves = new HashSet<>();
         // Move up-right
         for (ChessPosition dir : possibleDirections) {
             if (board.getPiece(dir) == null) {
@@ -78,7 +78,7 @@ public class ChessPiece {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
+        Set<ChessMove> legalMoves = new HashSet<>();
         // Moves to the left
         int[] leftSquares = new int[col - 1];
         int temp = col - 1;
@@ -126,7 +126,7 @@ public class ChessPiece {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
+        Set<ChessMove> legalMoves = new HashSet<>();
         // Moves downward
         int[] downSquares = new int[row - 1];
         int temp = row - 1;
@@ -174,7 +174,7 @@ public class ChessPiece {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
+        Set<ChessMove> legalMoves = new HashSet<>();
         // Moves to the up-left
         for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
             if (row + i > 8 || col - i < 1 ) { break; }  // Ensure we stay on the board
@@ -244,7 +244,7 @@ public class ChessPiece {
                 }
             }
         }
-        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
+        Set<ChessMove> legalMoves = new HashSet<>();
         // Move up-right
         for (ChessPosition dir : possibleDirections) {
             if (board.getPiece(dir) == null) {
@@ -264,9 +264,9 @@ public class ChessPiece {
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         int row = pos.getRow();
         int col = pos.getColumn();
-        int direction = 0;
+        int direction;
         Set<ChessPiece.PieceType> promotion = new HashSet<>();
-        Set<ChessMove> legalMoves = new HashSet<ChessMove>();
+        Set<ChessMove> legalMoves = new HashSet<>();
 
         // White moves up the board and black moves down the board
         if (color == ChessGame.TeamColor.WHITE) {
@@ -292,7 +292,7 @@ public class ChessPiece {
             for (ChessPiece.PieceType p : promotion) {
                 legalMoves.add(new ChessMove(pos, forwardPos, p));
             }
-            // Check forward 2 squares if on homerow
+            // Check forward 2 squares if on home row
             if (color == ChessGame.TeamColor.WHITE && row == 2 ||
                     color == ChessGame.TeamColor.BLACK && row == 7) {
                 ChessPosition forwardPos2 = new ChessPosition(row + 2 * direction, col);
@@ -337,7 +337,7 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // Make the variable that will contain the chess moves
-        Collection<ChessMove> legalMoves = new HashSet<ChessMove>();
+        Collection<ChessMove> legalMoves = new HashSet<>();
         // Check what piece is at myPosition
         if (board.getPiece(myPosition).getPieceType() == PieceType.KING) {
             legalMoves.addAll(adjacentSquares(board, myPosition));
@@ -355,7 +355,6 @@ public class ChessPiece {
         } else if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN) {
             legalMoves.addAll(forwardSquare(board, myPosition));
         } else {
-            legalMoves = null;
             throw new RuntimeException("Piece doesn't have a type");
         }
         return legalMoves;

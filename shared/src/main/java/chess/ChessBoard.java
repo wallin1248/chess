@@ -3,7 +3,6 @@ package chess;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static java.util.Objects.hash;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
