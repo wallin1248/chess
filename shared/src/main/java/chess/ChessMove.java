@@ -2,8 +2,6 @@ package chess;
 
 import java.util.Objects;
 
-import static java.util.Objects.hash;
-
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -11,10 +9,9 @@ import static java.util.Objects.hash;
  * signature of the existing methods.
  */
 public class ChessMove {
-
-    private final ChessPosition startPosition;
-    private final ChessPosition endPosition;
-    private final ChessPiece.PieceType promotionPiece;
+    ChessPosition startPosition;
+    ChessPosition endPosition;
+    ChessPiece.PieceType promotionPiece;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
@@ -26,12 +23,17 @@ public class ChessMove {
     /**
      * @return ChessPosition of starting location
      */
-    public ChessPosition getStartPosition() { return this.startPosition; }
+    public ChessPosition getStartPosition() {
+
+        return startPosition;
+    }
 
     /**
      * @return ChessPosition of ending location
      */
-    public ChessPosition getEndPosition() { return this.endPosition; }
+    public ChessPosition getEndPosition() {
+        return endPosition;
+    }
 
     /**
      * Gets the type of piece to promote a pawn to if pawn promotion is part of this
@@ -39,7 +41,9 @@ public class ChessMove {
      *
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
-    public ChessPiece.PieceType getPromotionPiece() { return this.promotionPiece; }
+    public ChessPiece.PieceType getPromotionPiece() {
+        return promotionPiece;
+    }
 
     @Override
     public boolean equals(Object object) {
@@ -52,17 +56,15 @@ public class ChessMove {
 
     @Override
     public int hashCode() {
-        return hash(startPosition, endPosition, promotionPiece);
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 
-    /**
-     * Create the print method for this object.
-     */
     @Override
     public String toString() {
-        return "ChessMove{Start:" + this.startPosition
-                + ", End:" + this.endPosition
-                + ", Promote:" + this.promotionPiece
-                + "}";
+        return "ChessMove{" +
+                "startPosition=" + startPosition +
+                ", endPosition=" + endPosition +
+                ", promotionPiece=" + promotionPiece +
+                '}';
     }
 }

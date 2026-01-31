@@ -1,6 +1,9 @@
 package chess;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 import static java.lang.Math.abs;
 
@@ -11,12 +14,10 @@ import static java.lang.Math.abs;
  * signature of the existing methods.
  */
 public class ChessPiece {
-
-    private final ChessGame.TeamColor teamColor;
-    private final PieceType type;
-
-    public ChessPiece(ChessGame.TeamColor teamColor, PieceType type) {
-        this.teamColor = teamColor;
+    ChessGame.TeamColor pieceColor;
+    PieceType type;
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+        this.pieceColor = pieceColor;
         this.type = type;
     }
 
@@ -35,297 +36,205 @@ public class ChessPiece {
     /**
      * @return Which team this chess piece belongs to
      */
-    public ChessGame.TeamColor getTeamColor() { return this.teamColor; }
+    public ChessGame.TeamColor getTeamColor() {
+        return pieceColor;
+    }
 
     /**
      * @return which type of chess piece this piece is
      */
-    public PieceType getPieceType() { return this.type; }
+    public PieceType getPieceType() {
+        return type;
+    }
 
-    /**
-     * Helper function that calculates the adjacent squares of a piece
-     * */
-    private Set<ChessMove> adjacentSquares(ChessBoard board, ChessPosition pos) {
-        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
-        int row = pos.getRow();
-        int col = pos.getColumn();
-        ArrayList<ChessPosition> possibleDirections = new ArrayList<>();
-        // Find all the possible adjacent directions
+    private Set<ChessMove> adjacentMoves(ChessBoard board, ChessPosition myPosition) {
+        Set<ChessMove> possibleMoves = new HashSet<>();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        // Check all 8 adjacent squares
         for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++){
+            for (int j = -1; j <= 1; j++) {
+                // Make sure we are still on the chessboard
                 if (row + i >= 1 && row + i <= 8 && col + j >= 1 && col + j <= 8 && (i != 0 || j != 0)) {
-                    possibleDirections.add(new ChessPosition(row + i, col + j));
+                    ChessPosition newPosition = new ChessPosition(row + i, col + j);
+                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                    if (board.getPiece(newPosition) == null) {
+                        possibleMoves.add(newMove);
+                    } else if (board.getPiece(newPosition).pieceColor != board.getPiece(myPosition).pieceColor) {
+                        possibleMoves.add(newMove);
+                    }
                 }
             }
         }
-        Set<ChessMove> legalMoves = new HashSet<>();
-        // Move up-right
-        for (ChessPosition dir : possibleDirections) {
-            if (board.getPiece(dir) == null) {
-                legalMoves.add(new ChessMove(pos, dir, null));
-            } else if (board.getPiece(dir).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, dir, null));
+
+        return possibleMoves;
+    }
+
+    private Set<ChessMove> straightLine(ChessBoard board, ChessPosition myPosition, int[] direction) {
+        Set<ChessMove> possibleMoves = new HashSet<>();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        // Straight lines never go longer than the starting square plus 7 moves
+        for (int i = 1; i < 8; i++) {
+            int newRow = row + direction[0] * i;
+            int newCol = col + direction[1] * i;
+            // Check we are still in the board
+            if (newRow >= 1
+                    && newRow <= 8
+                    && newCol >= 1
+                    && newCol <= 8) {
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                if (board.getPiece(newPosition) == null) {
+                    // Can move through empty squares
+                    possibleMoves.add(newMove);
+                } else if (board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                    // Can move to but not past an enemy piece
+                    possibleMoves.add(newMove);
+                    break;
+                } else if (board.getPiece(newPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+                    break;
+                } else {
+                    throw new RuntimeException("Shouldn't be possible to have piece that isn't the same or different type as own.");
+                }
             }
         }
 
-        return legalMoves;
+        return possibleMoves;
     }
 
-    /**
-     * Helper function that calculates horizontal moves of a piece
-     * */
-    private Set<ChessMove> horizontalSquares(ChessBoard board, ChessPosition pos) {
-        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
-        int row = pos.getRow();
-        int col = pos.getColumn();
-        Set<ChessMove> legalMoves = new HashSet<>();
-        // Moves to the left
-        int[] leftSquares = new int[col - 1];
-        int temp = col - 1;
-        int iter = 0;
-        while (temp >= 1) {
-            leftSquares[iter] = temp;
-            temp -= 1;
-            iter += 1;
-        }
-        for (int i : leftSquares) {
-            ChessPosition nextLeft = new ChessPosition(row, i);
-            if (board.getPiece(nextLeft) == null) {
-                legalMoves.add(new ChessMove(pos, nextLeft, null));
-            } else if (board.getPiece(nextLeft).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, nextLeft, null));
-                break;
-            } else { break; }
-        }
-        // Moves to the right
-        int[] rightSquares = new int[8 - col];
-        temp = col + 1;
-        iter = 0;
-        while (temp <= 8) {
-            rightSquares[iter] = temp;
-            temp += 1;
-            iter += 1;
-        }
-        for (int j : rightSquares) {
-            ChessPosition nextRight = new ChessPosition(row, j);
-            if (board.getPiece(nextRight) == null) {
-                legalMoves.add(new ChessMove(pos, nextRight, null));
-            } else if (board.getPiece(nextRight).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, nextRight, null));
-                break;
-            } else { break; }
-        }
+    private Set<ChessMove> flatMoves(ChessBoard board, ChessPosition myPosition) {
+        Set<ChessMove> possibleMoves = new HashSet<>();
+        int[] up    = { 1,  0};
+        int[] down  = {-1,  0};
+        int[] left  = { 0, -1};
+        int[] right = { 0,  1};
 
-        return legalMoves;
+        possibleMoves.addAll(straightLine(board, myPosition, up));
+        possibleMoves.addAll(straightLine(board, myPosition, down));
+        possibleMoves.addAll(straightLine(board, myPosition, left));
+        possibleMoves.addAll(straightLine(board, myPosition, right));
+
+        return possibleMoves;
     }
 
-    /**
-     * Helper function that calculates horizontal moves of a piece
-     * */
-    private Set<ChessMove> verticalSquares(ChessBoard board, ChessPosition pos) {
-        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
-        int row = pos.getRow();
-        int col = pos.getColumn();
-        Set<ChessMove> legalMoves = new HashSet<>();
-        // Moves downward
-        int[] downSquares = new int[row - 1];
-        int temp = row - 1;
-        int iter = 0;
-        while (temp >= 1) {
-            downSquares[iter] = temp;
-            temp -= 1;
-            iter += 1;
-        }
-        for (int i : downSquares) {
-            ChessPosition nextDown = new ChessPosition(i, col);
-            if (board.getPiece(nextDown) == null) {
-                legalMoves.add(new ChessMove(pos, nextDown, null));
-            } else if (board.getPiece(nextDown).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, nextDown, null));
-                break;
-            } else { break; }
-        }
-        // Moves upward
-        int[] upSquares = new int[8 - row];
-        temp = row + 1;
-        iter = 0;
-        while (temp <= 8) {
-            upSquares[iter] = temp;
-            temp += 1;
-            iter += 1;
-        }
-        for (int j : upSquares) {
-            ChessPosition nextUp = new ChessPosition(j, col);
-            if (board.getPiece(nextUp) == null) {
-                legalMoves.add(new ChessMove(pos, nextUp, null));
-            } else if (board.getPiece(nextUp).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, nextUp, null));
-                break;
-            } else { break; }
-        }
+    private Set<ChessMove> diagMoves(ChessBoard board, ChessPosition myPosition) {
+        Set<ChessMove> possibleMoves = new HashSet<>();
+        int[] up_left    = { 1, -1};
+        int[] down_left  = {-1, -1};
+        int[] up_right   = { 1,  1};
+        int[] down_right = {-1,  1};
 
-        return legalMoves;
+        possibleMoves.addAll(straightLine(board, myPosition, up_left));
+        possibleMoves.addAll(straightLine(board, myPosition, down_left));
+        possibleMoves.addAll(straightLine(board, myPosition, up_right));
+        possibleMoves.addAll(straightLine(board, myPosition, down_right));
+
+        return possibleMoves;
     }
 
-    /**
-     * Helper function that calculates horizontal moves of a piece
-     * */
-    private Set<ChessMove> diagonalSquares(ChessBoard board, ChessPosition pos) {
-        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
-        int row = pos.getRow();
-        int col = pos.getColumn();
-        Set<ChessMove> legalMoves = new HashSet<>();
-        // Moves to the up-left
-        for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
-            if (row + i > 8 || col - i < 1 ) { break; }  // Ensure we stay on the board
-            ChessPosition newPos = new ChessPosition(row + i, col - i);
-            if (board.getPiece(newPos) == null) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            } else if (board.getPiece(newPos).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
-                break;
-            } else { break; }
-        }
-        // Moves to the down-left
-        for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
-            if (row - i < 1 || col - i < 1) { break; }  // Ensure we stay on the board
-            ChessPosition newPos = new ChessPosition(row - i, col - i);
-            if (board.getPiece(newPos) == null) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            } else if (board.getPiece(newPos).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
-                break;
-            } else { break; }
-        }
-        // Moves to the down-right
-        for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
-            if (row - i < 1 || col + i > 8) { break; }  // Ensure we stay on the board
-            ChessPosition newPos = new ChessPosition(row - i, col + i);
-            if (board.getPiece(newPos) == null) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            } else if (board.getPiece(newPos).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
-                break;
-            } else { break; }
-        }
-        // Moves to the up-right
-        for (int i = 1; i <= 7; i ++) { // At most there are 7 diagonal squares in any one direction
-            if (row + i > 8 || col + i > 8) { break; }  // Ensure we stay on the board
-            ChessPosition newPos = new ChessPosition(row + i, col + i);
-            if (board.getPiece(newPos) == null) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
-            } else if (board.getPiece(newPos).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
-                break;
-            } else { break; }
-        }
-
-        return legalMoves;
-    }
-
-    /**
-     * Helper function that calculates horizontal moves of a piece
-     * */
-    private Set<ChessMove> LShapeSquares(ChessBoard board, ChessPosition pos) {
-        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
-        int row = pos.getRow();
-        int col = pos.getColumn();
+    private Set<ChessMove> lShapeMoves(ChessBoard board, ChessPosition myPosition) {
+        Set<ChessMove> possibleMoves = new HashSet<>();
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
         int[] knightDistances = new int[4];
-        knightDistances[0] = -2;
-        knightDistances[1] = -1;
-        knightDistances[2] = 1;
-        knightDistances[3] = 2;
-        ArrayList<ChessPosition> possibleDirections = new ArrayList<>();
-        // Find all the possible adjacent directions
+        knightDistances[0] = 1;
+        knightDistances[1] = 2;
+        knightDistances[2] = -1;
+        knightDistances[3] = -2;
+        // Check all 8 adjacent squares
         for (int i : knightDistances) {
-            for (int j : knightDistances){
-                if (row + i >= 1 && row + i <= 8 && col + j >= 1 && col + j <= 8 && abs(i) != abs(j)) {
-                    possibleDirections.add(new ChessPosition(row + i, col + j));
+            for (int j : knightDistances) {
+                // Make sure we are still on the chessboard
+                if (row + i >= 1 && row + i <= 8 && col + j >= 1 && col + j <= 8 && (abs(i) != abs(j))) {
+                    ChessPosition newPosition = new ChessPosition(row + i, col + j);
+                    ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+                    if (board.getPiece(newPosition) == null) {
+                        possibleMoves.add(newMove);
+                    } else if (board.getPiece(newPosition).pieceColor != board.getPiece(myPosition).pieceColor) {
+                        possibleMoves.add(newMove);
+                    }
                 }
             }
         }
-        Set<ChessMove> legalMoves = new HashSet<>();
-        // Move up-right
-        for (ChessPosition dir : possibleDirections) {
-            if (board.getPiece(dir) == null) {
-                legalMoves.add(new ChessMove(pos, dir, null));
-            } else if (board.getPiece(dir).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, dir, null));
-            }
-        }
 
-        return legalMoves;
+        return possibleMoves;
     }
 
-    /**
-     * Helper function that calculates horizontal moves of a piece
-     * */
-    private Set<ChessMove> forwardSquare(ChessBoard board, ChessPosition pos) {
-        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
-        int row = pos.getRow();
-        int col = pos.getColumn();
+    private Set<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
+        Set<ChessMove> possibleMoves = new HashSet<>();
+        ChessPosition newPosition;
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        boolean isOnHomeRow = (row == 2 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                (row == 7 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK);
+        boolean isReadyToPromote = (row == 7 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                (row == 2 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK);
+        Set<PieceType> promoteTo = new HashSet<>();
+        if (isReadyToPromote) {
+            promoteTo.add(PieceType.QUEEN);
+            promoteTo.add(PieceType.ROOK);
+            promoteTo.add(PieceType.BISHOP);
+            promoteTo.add(PieceType.KNIGHT);
+        } else {
+            promoteTo.add(null);
+        }
         int direction;
-        Set<ChessPiece.PieceType> promotion = new HashSet<>();
-        Set<ChessMove> legalMoves = new HashSet<>();
-
-        // White moves up the board and black moves down the board
-        if (color == ChessGame.TeamColor.WHITE) {
+        if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
             direction = 1;
         } else {
             direction = -1;
         }
+        boolean isOnLeft = col <= 1;
+        boolean isOnRight = col >= 8;
 
-        // Find the possible promotions
-        if ((row + direction != 8 && color == ChessGame.TeamColor.WHITE) ||
-                (row + direction != 1 && color == ChessGame.TeamColor.BLACK)) {
-            promotion.add(null);
-        } else {
-            promotion.add(PieceType.QUEEN);
-            promotion.add(PieceType.ROOK);
-            promotion.add(PieceType.KNIGHT);
-            promotion.add(PieceType.BISHOP);
-        }
-
-        // Check non-capturing forward one square
-        ChessPosition forwardPos = new ChessPosition(row + direction, col);
-        if (board.getPiece(forwardPos) == null) {
-            for (ChessPiece.PieceType p : promotion) {
-                legalMoves.add(new ChessMove(pos, forwardPos, p));
-            }
-            // Check forward 2 squares if on home row
-            if (color == ChessGame.TeamColor.WHITE && row == 2 ||
-                    color == ChessGame.TeamColor.BLACK && row == 7) {
-                ChessPosition forwardPos2 = new ChessPosition(row + 2 * direction, col);
-                if (board.getPiece(forwardPos2) == null) {
-                    for (ChessPiece.PieceType p : promotion) {
-                        legalMoves.add(new ChessMove(pos, forwardPos2, p));
+        // Check if we can move forward one
+        if (row + direction  >= 1 && row + direction <= 8) {
+            newPosition = new ChessPosition(row + direction, col);
+            if (board.getPiece(newPosition) == null) {
+                for (PieceType promotion : promoteTo) {
+                    ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
+                    possibleMoves.add(newMove);
+                }
+                // Since the first square is open, check if we can move 2 spaces as well
+                if (isOnHomeRow) {
+                    newPosition = new ChessPosition(row + 2 * direction, col);
+                    if (board.getPiece(newPosition) == null) {
+                        for (PieceType promotion : promoteTo) {
+                            ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
+                            possibleMoves.add(newMove);
+                        }
                     }
                 }
             }
         }
-        // Check capturing
-        if (col > 1) {
-            ChessPosition leftCapture = new ChessPosition(row + direction, col - 1);
-            if (board.getPiece(leftCapture) != null) {
-                if (board.getPiece(leftCapture).getTeamColor() != color) {
-                    for (ChessPiece.PieceType p : promotion) {
-                        legalMoves.add(new ChessMove(pos, leftCapture, p));
+        // Check if we can capture to the left
+        if (!isOnLeft && row + direction  >= 1 && row + direction <= 8) {
+            newPosition = new ChessPosition(row + direction, col - 1);
+            if (board.getPiece(newPosition) != null) {
+                if (board.getPiece((newPosition)).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                    for (PieceType promotion : promoteTo) {
+                        ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
+                        possibleMoves.add(newMove);
                     }
                 }
             }
         }
-        if (col < 8) {
-            ChessPosition rightCapture = new ChessPosition(row + direction, col + 1);
-            if (board.getPiece(rightCapture) != null) {
-                if (board.getPiece(rightCapture).getTeamColor() != color) {
-                    for (ChessPiece.PieceType p : promotion) {
-                        legalMoves.add(new ChessMove(pos, rightCapture, p));
+        // Check if we can capture to the right
+        if (!isOnRight && row + direction  >= 1 && row + direction <= 8) {
+            newPosition = new ChessPosition(row + direction, col + 1);
+            if (board.getPiece(newPosition) != null) {
+                if (board.getPiece((newPosition)).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                    for (PieceType promotion : promoteTo) {
+                        ChessMove newMove = new ChessMove(myPosition, newPosition, promotion);
+                        possibleMoves.add(newMove);
                     }
                 }
             }
         }
 
-        return legalMoves;
+        return possibleMoves;
     }
 
     /**
@@ -336,28 +245,28 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        // Make the variable that will contain the chess moves
-        Collection<ChessMove> legalMoves = new HashSet<>();
-        // Check what piece is at myPosition
-        if (board.getPiece(myPosition).getPieceType() == PieceType.KING) {
-            legalMoves.addAll(adjacentSquares(board, myPosition));
-        } else if (board.getPiece(myPosition).getPieceType() == PieceType.QUEEN) {
-            legalMoves.addAll(horizontalSquares(board, myPosition));
-            legalMoves.addAll(verticalSquares(board, myPosition));
-            legalMoves.addAll(diagonalSquares(board, myPosition));
-        } else if (board.getPiece(myPosition).getPieceType() == PieceType.ROOK) {
-            legalMoves.addAll(horizontalSquares(board, myPosition));
-            legalMoves.addAll(verticalSquares(board, myPosition));
-        } else if (board.getPiece(myPosition).getPieceType() == PieceType.BISHOP) {
-            legalMoves.addAll(diagonalSquares(board, myPosition));
-        } else if (board.getPiece(myPosition).getPieceType() == PieceType.KNIGHT) {
-            legalMoves.addAll(LShapeSquares(board, myPosition));
-        } else if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN) {
-            legalMoves.addAll(forwardSquare(board, myPosition));
+        Collection<ChessMove> possibleMoves = new HashSet<>();
+
+        ChessPiece myPiece = board.getPiece(myPosition);
+        PieceType myType = myPiece.getPieceType();
+        // Run everything needed to find each piece's legal moves
+        if (myType == PieceType.KING) {
+            possibleMoves.addAll(adjacentMoves(board, myPosition));
+        } else if (myType == PieceType.QUEEN) {
+            possibleMoves.addAll(flatMoves(board, myPosition));
+            possibleMoves.addAll(diagMoves(board, myPosition));
+        } else if (myType == PieceType.ROOK) {
+            possibleMoves.addAll(flatMoves(board, myPosition));
+        } else if (myType == PieceType.BISHOP) {
+            possibleMoves.addAll(diagMoves(board, myPosition));
+        } else if (myType == PieceType.KNIGHT) {
+            possibleMoves.addAll(lShapeMoves(board, myPosition));
+        } else if (myType == PieceType.PAWN) {
+            possibleMoves.addAll(pawnMoves(board, myPosition));
         } else {
-            throw new RuntimeException("Piece doesn't have a type");
+            throw new RuntimeException("Unknown piece type");
         }
-        return legalMoves;
+        return possibleMoves;
     }
 
     @Override
@@ -366,21 +275,19 @@ public class ChessPiece {
             return false;
         }
         ChessPiece that = (ChessPiece) object;
-        return teamColor == that.teamColor && type == that.type;
+        return pieceColor == that.pieceColor && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teamColor, type);
+        return Objects.hash(pieceColor, type);
     }
 
-    /**
-         * Create the print method for this object.
-         */
     @Override
     public String toString() {
-        return "ChessPiece{Type:" + this.getPieceType() +
-                ", Color:" + this.getTeamColor() +
-                "}";
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
     }
 }
