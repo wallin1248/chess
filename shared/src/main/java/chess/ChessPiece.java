@@ -80,17 +80,39 @@ public class ChessPiece {
         int col = pos.getColumn();
         Set<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Moves to the left
-        for (int i = row - 1; i >= 1; i --) {
-            ChessPosition newPos = new ChessPosition(i, col);
-            if (board.getPiece(newPos).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
+        int[] leftSquares = new int[col - 1];
+        int temp = col - 1;
+        int iter = 0;
+        while (temp >= 1) {
+            leftSquares[iter] = temp;
+            temp -= 1;
+            iter += 1;
+        }
+        for (int i : leftSquares) {
+            ChessPosition nextLeft = new ChessPosition(row, i);
+            if (board.getPiece(nextLeft) == null) {
+                legalMoves.add(new ChessMove(pos, nextLeft, null));
+            } else if (board.getPiece(nextLeft).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, nextLeft, null));
+                break;
             } else { break; }
         }
         // Moves to the right
-        for (int i = row + 1; i <= 8; i ++) {
-            ChessPosition newPos = new ChessPosition(i, col);
-            if (board.getPiece(newPos).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
+        int[] rightSquares = new int[8 - col];
+        temp = col + 1;
+        iter = 0;
+        while (temp <= 8) {
+            rightSquares[iter] = temp;
+            temp += 1;
+            iter += 1;
+        }
+        for (int j : rightSquares) {
+            ChessPosition nextRight = new ChessPosition(row, j);
+            if (board.getPiece(nextRight) == null) {
+                legalMoves.add(new ChessMove(pos, nextRight, null));
+            } else if (board.getPiece(nextRight).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, nextRight, null));
+                break;
             } else { break; }
         }
 
@@ -106,17 +128,39 @@ public class ChessPiece {
         int col = pos.getColumn();
         Set<ChessMove> legalMoves = new HashSet<ChessMove>();
         // Moves downward
-        for (int i = col - 1; i >= 1; i --) {
-            ChessPosition newPos = new ChessPosition(row, i);
-            if (board.getPiece(newPos).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
+        int[] downSquares = new int[row - 1];
+        int temp = row - 1;
+        int iter = 0;
+        while (temp >= 1) {
+            downSquares[iter] = temp;
+            temp -= 1;
+            iter += 1;
+        }
+        for (int i : downSquares) {
+            ChessPosition nextDown = new ChessPosition(i, col);
+            if (board.getPiece(nextDown) == null) {
+                legalMoves.add(new ChessMove(pos, nextDown, null));
+            } else if (board.getPiece(nextDown).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, nextDown, null));
+                break;
             } else { break; }
         }
         // Moves upward
-        for (int i = col + 1; i <= 8; i ++) {
-            ChessPosition newPos = new ChessPosition(row, i);
-            if (board.getPiece(newPos).getTeamColor() != color) {
-                legalMoves.add(new ChessMove(pos, newPos, null));
+        int[] upSquares = new int[8 - row];
+        temp = row + 1;
+        iter = 0;
+        while (temp <= 8) {
+            upSquares[iter] = temp;
+            temp += 1;
+            iter += 1;
+        }
+        for (int j : upSquares) {
+            ChessPosition nextUp = new ChessPosition(j, col);
+            if (board.getPiece(nextUp) == null) {
+                legalMoves.add(new ChessMove(pos, nextUp, null));
+            } else if (board.getPiece(nextUp).getTeamColor() != color) {
+                legalMoves.add(new ChessMove(pos, nextUp, null));
+                break;
             } else { break; }
         }
 
