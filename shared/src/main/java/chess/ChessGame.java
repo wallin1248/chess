@@ -14,6 +14,11 @@ public class ChessGame {
 
     private ChessBoard board;
 
+    // This is supposed to make the class able to be initialized without giving a teamTurn
+    public ChessGame() {
+        new ChessGame(TeamColor.WHITE);
+    }
+
     public ChessGame(TeamColor teamTurn) {
         this.teamTurn = teamTurn;
         this.board = new ChessBoard();
