@@ -12,8 +12,12 @@ public class ChessGame {
 
     private TeamColor teamTurn;
 
+    private ChessBoard board;
+
     public ChessGame(TeamColor teamTurn) {
         this.teamTurn = teamTurn;
+        this.board = new ChessBoard();
+        this.board.resetBoard();
     }
 
     /**
@@ -30,7 +34,6 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         this.teamTurn = team;
-        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -42,7 +45,7 @@ public class ChessGame {
     }
 
     /**
-     * Gets a valid moves for a piece at the given location
+     * Gets valid move(s) for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
      * @return Set of valid moves for requested piece, or null if no piece at
@@ -50,8 +53,13 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         // TODO: Implement this
+        // Use startPosition and chessBoard to find which piece moves
+        // For each of that piece's moves, check if the opponent is able to capture the king after
+        // If the opponent can't, add this move to the collection
+        // Return the collection of moves this piece can make
         throw new RuntimeException("Not implemented");
     }
+
 
     /**
      * Makes a move in a chess game
@@ -61,6 +69,9 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         // TODO: Implement this
+        // Check if this move is inside of validMoves
+        // If it is, do move
+        // Else, throw InvalidMoveException
         throw new RuntimeException("Not implemented");
     }
 
@@ -72,6 +83,9 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         // TODO
+        // Make a collection of every piece on the opposing side
+        // Use ChessBoard.getmoves to find all squares the opponent can move to
+        // If any of those squares is where teamColor's king is, return true. Else return false
         throw new RuntimeException("Not implemented");
     }
 
@@ -83,6 +97,8 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         // TODO
+        // Do the same logic as in isInCheck
+        // but instead of checking just the square the king is at, make sure that square and all that the king can move to are hit
         throw new RuntimeException("Not implemented");
     }
 
@@ -95,6 +111,9 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         // TODO
+        // Do the same logic as in isInCheckmate
+        // but only check the squares the king can move to
+        // Additionally, make sure no other pieces have legal moves
         throw new RuntimeException("Not implemented");
     }
 
@@ -104,8 +123,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        // TODO
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -114,7 +132,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        // TODO
-        throw new RuntimeException("Not implemented");
+        return this.board;
     }
 }
