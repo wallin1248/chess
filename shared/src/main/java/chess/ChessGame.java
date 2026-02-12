@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -11,8 +13,9 @@ import java.util.Collection;
 public class ChessGame {
 
     private TeamColor teamTurn;
-
     private ChessBoard board;
+    private boolean[] couldCastle;
+    private boolean couldEnPassant;
 
     // This is supposed to make the class able to be initialized without giving a teamTurn
     public ChessGame() {
@@ -20,9 +23,15 @@ public class ChessGame {
     }
 
     public ChessGame(TeamColor teamTurn) {
+        // Store the given teamTurn
         this.teamTurn = teamTurn;
+        // Initialize the board
         this.board = new ChessBoard();
         this.board.resetBoard();
+        // Initialize castling (kingside white, queenside white, kingside black, queenside black)
+        this.couldCastle = new boolean[]{true, true, true, true};
+        // Initialize enPassant tracker
+        this.couldEnPassant = false;
     }
 
     /**
@@ -65,7 +74,6 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
-
     /**
      * Makes a move in a chess game
      *
@@ -74,10 +82,58 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         // TODO: Implement this
-        // Check if this move is inside of validMoves
-        // If it is, do move
-        // Else, throw InvalidMoveException
+        chess.ChessPosition startPos = move.getStartPosition();
+        TeamColor movingTeam = board.getPiece(move.getStartPosition()).getTeamColor();
+        // Check if this move is inside of validMoves and if the right team is moving
+        if (validMoves(startPos).contains(move) && movingTeam == teamTurn) {
+            // If it is, do move
+        } else if (movingTeam != teamTurn) {
+            throw new InvalidMoveException("Wrong team moving");
+        } else if (!validMoves(startPos).contains(move)) {
+            throw new InvalidMoveException("Illegal move");
+        }
         throw new RuntimeException("Not implemented");
+    }
+
+    /**
+     * Determines if the team sees the given square(s)
+     *
+     * @param teamColor which team is looking
+     * @param
+     * @return True if the specified team is in check
+     */
+    private boolean canSeeSquare(TeamColor teamColor, Collection<ChessPosition> squares) {
+        // TODO
+        // Make a collection of every piece on the teamColor's side
+        ArrayList<ChessPosition> teamPositions = new ArrayList<>();
+        ChessPosition tempPos;
+        ChessPiece tempPiece;
+        for (int i = 1; i < 8; i++) {
+            for (int j = 1; j < 8; j++) {
+                tempPos = new ChessPosition(i, j);
+                tempPiece = board.getPiece(tempPos);
+                if (tempPiece.getTeamColor() == teamColor) {
+                    teamPositions.add(tempPos);
+                }
+            }
+        }
+        // Use ChessPiece.pieceMoves() to find all squares the teamColor can move to
+        ArrayList<ChessPosition> possibleEndPositions = new ArrayList<>();
+        for (ChessPosition currPos : teamPositions) {
+            ChessPiece currPiece = board.getPiece(currPos);
+            Collection<ChessMove> currMoves = currPiece.pieceMoves(board, currPos);
+            for (ChessMove move : currMoves) {
+                ChessPosition endPos = move.endPosition;
+                possibleEndPositions.add(endPos);
+            }
+        }
+        // If all squares are hit at least once return true. Else return false
+        for (ChessPosition target : squares) {
+            if (!possibleEndPositions.contains(target)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -88,9 +144,8 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         // TODO
-        // Make a collection of every piece on the opposing side
-        // Use ChessBoard.getmoves to find all squares the opponent can move to
-        // If any of those squares is where teamColor's king is, return true. Else return false
+        // Find the king
+        // Use canSeeSquare on the king's location
         throw new RuntimeException("Not implemented");
     }
 
@@ -102,8 +157,8 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         // TODO
-        // Do the same logic as in isInCheck
-        // but instead of checking just the square the king is at, make sure that square and all that the king can move to are hit
+        // Find the king + the king's possible moves
+        // Use canSeeSquare on the king's location + possible moves
         throw new RuntimeException("Not implemented");
     }
 
@@ -116,9 +171,8 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         // TODO
-        // Do the same logic as in isInCheckmate
-        // but only check the squares the king can move to
-        // Additionally, make sure no other pieces have legal moves
+        // Find the king's possible moves
+        // Use canSeeSquare on the king's possible moves
         throw new RuntimeException("Not implemented");
     }
 
