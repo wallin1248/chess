@@ -67,7 +67,9 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         // TODO: Implement this
-        // Use startPosition and chessBoard to find which piece moves
+        // Use startPosition and board to find all possible moves
+        ChessPiece piece = board.getPiece(startPosition);
+        Collection<ChessMove> hypotheticalMoves = piece.pieceMoves(board, startPosition);
         // For each of that piece's moves, check if the opponent is able to capture the king after
         // If the opponent can't, add this move to the collection
         // Return the collection of moves this piece can make
@@ -145,8 +147,11 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         // TODO
         // Find the king
+        ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+        Collection<ChessPosition> kingPos = board.getPosition(king);
         // Use canSeeSquare on the king's location
-        throw new RuntimeException("Not implemented");
+        TeamColor enemyTeamColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        return canSeeSquare(enemyTeamColor, kingPos);
     }
 
     /**
@@ -157,9 +162,26 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         // TODO
-        // Find the king + the king's possible moves
-        // Use canSeeSquare on the king's location + possible moves
-        throw new RuntimeException("Not implemented");
+        // Find if the king is in check right now
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        // Find every possible move for teamColor
+        Collection<ChessPosition> teamPieces = new HashSet<>();
+        for (ChessPiece.PieceType type : ChessPiece.PieceType.values()) {
+            ChessPiece currPiece = new ChessPiece(teamColor, type);
+            teamPieces.addAll(board.getPosition(currPiece));
+        }
+        Collection<ChessMove> allValidMoves = new HashSet<>();
+        for (ChessPosition currPos : teamPieces) {
+            allValidMoves.addAll(validMoves(currPos));
+        }
+        // No valid moves at this point means checkmate
+        if (allValidMoves.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -171,9 +193,40 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         // TODO
+        // Find that the king isn't in check right now
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+        // Find every possible move for teamColor
+        Collection<ChessPosition> teamPieces = new HashSet<>();
+        for (ChessPiece.PieceType type : ChessPiece.PieceType.values()) {
+            ChessPiece currPiece = new ChessPiece(teamColor, type);
+            teamPieces.addAll(board.getPosition(currPiece));
+        }
+        Collection<ChessMove> allValidMoves = new HashSet<>();
+        for (ChessPosition currPos : teamPieces) {
+            allValidMoves.addAll(validMoves(currPos));
+        }
+        // No valid moves at this point means stalemate
+        if (allValidMoves.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+
+
+
         // Find the king's possible moves
+        ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+        Collection<ChessPosition> kingPos = board.getPosition(king);
+        Collection<ChessMove> kingMoves = king.pieceMoves(board, kingPos);
+        Collection<ChessPosition> kingEndPositions = new HashSet<>();
+        for (ChessMove move : kingMoves) {
+            kingEndPositions.add(move.getEndPosition());
+        }
         // Use canSeeSquare on the king's possible moves
-        throw new RuntimeException("Not implemented");
+        TeamColor enemyTeamColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        return canSeeSquare(enemyTeamColor, kingPos);
     }
 
     /**
