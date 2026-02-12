@@ -238,12 +238,28 @@ public class ChessPiece {
     }
 
     /**
-     * Calculates all the positions a chess piece can move to
+     * Overload the pieceMoves method to be able to handle multiple pieces at once.
+     * Calculates all the positions a collection of chess piece can move to.
      * Does not take into account moves that are illegal due to leaving the king in
-     * danger
+     * danger.
      *
      * @return Collection of valid moves
      */
+    public Collection<ChessMove> pieceMoves(ChessBoard board, Collection<ChessPosition> myPositions) {
+        Collection<ChessMove> possibleMoves = new HashSet<>();
+        for (ChessPosition currPos : myPositions) {
+            possibleMoves.addAll(pieceMoves(board, currPos));
+        }
+        return possibleMoves;
+    }
+
+        /**
+         * Calculates all the positions a chess piece can move to.
+         * Does not take into account moves that are illegal due to leaving the king in
+         * danger.
+         *
+         * @return Collection of valid moves
+         */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleMoves = new HashSet<>();
 
