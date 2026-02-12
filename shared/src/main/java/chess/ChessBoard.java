@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -30,7 +32,7 @@ public class ChessBoard {
     }
 
     /**
-     * Gets a chess piece on the chessboard
+     * Gets the chess piece on the chessboard in the given position.
      *
      * @param position The position to get the piece from
      * @return Either the piece at the position, or null if no piece is at that
@@ -43,7 +45,34 @@ public class ChessBoard {
     }
 
     /**
-     * Sets the board to the default starting board
+     * Gets the position(s) of the given piece on the chessboard.
+     *
+     * @param piece The chess piece to locate
+     * @return Either an ArrayList of the position(s) of the piece, or null if
+     * no piece is at that position
+     */
+    public Collection<ChessPosition> getPosition(ChessPiece piece) {
+        boolean isEmpty = true;
+        ChessGame.TeamColor color = piece.getTeamColor();
+        Collection<ChessPosition> positions = new ArrayList<>();
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition currPos = new ChessPosition(i, j);
+                ChessPiece currPiece = getPiece(currPos);
+                if (currPiece == piece) {
+                    positions.add(currPos);
+                }
+            }
+        }
+        if (positions.isEmpty()) {
+            return null;
+        } else {
+            return positions;
+        }
+    }
+
+    /**
+     * Sets the board to the default starting board.
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
