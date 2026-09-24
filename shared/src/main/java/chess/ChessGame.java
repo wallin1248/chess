@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -9,6 +10,8 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    ChessBoard chessBoard;
+    TeamColor whichTeamTurn;
 
     public ChessGame() {
 
@@ -18,7 +21,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.whichTeamTurn;
     }
 
     /**
@@ -27,7 +30,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.whichTeamTurn = team;
     }
 
     /**
@@ -66,6 +69,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+
         throw new RuntimeException("Not implemented");
     }
 
@@ -76,6 +80,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+
         throw new RuntimeException("Not implemented");
     }
 
@@ -87,6 +92,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+
         throw new RuntimeException("Not implemented");
     }
 
@@ -96,6 +102,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
+
         throw new RuntimeException("Not implemented");
     }
 
@@ -105,6 +112,21 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
+
         throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) object;
+        return Objects.equals(chessBoard, chessGame.chessBoard) && whichTeamTurn == chessGame.whichTeamTurn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chessBoard, whichTeamTurn);
     }
 }
