@@ -195,88 +195,89 @@ public class ChessPiece {
         Collection<ChessMove> totalMoves = new HashSet<>();
         boolean promote;
         ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
+        int promoteRow;
+        int homeRow;
+        ChessPosition upPos;
+        ChessPosition superUpPos;
+        ChessPosition leftPos;
+        ChessPosition rightPos;
+        // Configure for WHITE pawns vs BLACK pawns
         if (color == ChessGame.TeamColor.WHITE) {
-            if (pos.getRow() == 7) {
-                promote = true;
+            promoteRow = 7;
+            homeRow = 2;
+            upPos = new ChessPosition(pos.getRow() + 1, pos.getColumn());
+            superUpPos = new ChessPosition(pos.getRow() + 2, pos.getColumn());
+            if (pos.getColumn() >= 2) {
+                leftPos = new ChessPosition(pos.getRow() + 1, pos.getColumn() - 1);
             } else {
-                promote = false;
+                leftPos = null;
             }
-
-            ChessPosition upPos = new ChessPosition(pos.getRow() + 1, pos.getColumn());
-            if (board.getPiece(upPos) == null) {
-                if (promote) {
-                    totalMoves.add(new ChessMove(pos, upPos, PieceType.QUEEN));
-                    totalMoves.add(new ChessMove(pos, upPos, PieceType.ROOK));
-                    totalMoves.add(new ChessMove(pos, upPos, PieceType.BISHOP));
-                    totalMoves.add(new ChessMove(pos, upPos, PieceType.KNIGHT));
-                } else {
-                    totalMoves.add(new ChessMove(pos, upPos, null));
-                }
-            }
-
-            ChessPosition leftPos = new ChessPosition(pos.getRow() + 1, pos.getColumn() - 1);
-            if (board.getPiece(leftPos).getTeamColor() == ChessGame.TeamColor.BLACK) {
-                if (promote) {
-                    totalMoves.add(new ChessMove(pos, leftPos, PieceType.QUEEN));
-                    totalMoves.add(new ChessMove(pos, leftPos, PieceType.ROOK));
-                    totalMoves.add(new ChessMove(pos, leftPos, PieceType.BISHOP));
-                    totalMoves.add(new ChessMove(pos, leftPos, PieceType.KNIGHT));
-                } else {
-                    totalMoves.add(new ChessMove(pos, leftPos, null));
-                }
-            }
-
-            ChessPosition rightPos = new ChessPosition(pos.getRow() + 1, pos.getColumn() + 1);
-            if (board.getPiece(rightPos).getTeamColor() == ChessGame.TeamColor.BLACK) {
-                if (promote) {
-                    totalMoves.add(new ChessMove(pos, rightPos, PieceType.QUEEN));
-                    totalMoves.add(new ChessMove(pos, rightPos, PieceType.ROOK));
-                    totalMoves.add(new ChessMove(pos, rightPos, PieceType.BISHOP));
-                    totalMoves.add(new ChessMove(pos, rightPos, PieceType.KNIGHT));
-                } else {
-                    totalMoves.add(new ChessMove(pos, rightPos, null));
-                }
+            if (pos.getColumn() <= 7) {
+                rightPos = new ChessPosition(pos.getRow() + 1, pos.getColumn() + 1);
+            } else {
+                rightPos = null;
             }
         } else {
-            if (pos.getRow() == 2) {
-                promote = true;
+            promoteRow = 2;
+            homeRow = 7;
+            upPos = new ChessPosition(pos.getRow() - 1, pos.getColumn());
+            superUpPos = new ChessPosition(pos.getRow() - 2, pos.getColumn());
+            if (pos.getColumn() >= 2) {
+                leftPos = new ChessPosition(pos.getRow() - 1, pos.getColumn() - 1);
             } else {
-                promote = false;
+                leftPos = null;
             }
-
-            ChessPosition upPos = new ChessPosition(pos.getRow() - 1, pos.getColumn());
-            if (board.getPiece(upPos) == null) {
-                if (promote) {
-                    totalMoves.add(new ChessMove(pos, upPos, PieceType.QUEEN));
-                    totalMoves.add(new ChessMove(pos, upPos, PieceType.ROOK));
-                    totalMoves.add(new ChessMove(pos, upPos, PieceType.BISHOP));
-                    totalMoves.add(new ChessMove(pos, upPos, PieceType.KNIGHT));
-                } else {
-                    totalMoves.add(new ChessMove(pos, upPos, null));
+            if (pos.getColumn() <= 7) {
+                rightPos = new ChessPosition(pos.getRow() - 1, pos.getColumn() + 1);
+            } else {
+                rightPos = null;
+            }
+        }
+        // We only promote if we're on the promotion row
+        promote = (pos.getRow() == promoteRow);
+        // Check if the pawn can move straight forward
+        if (board.getPiece(upPos) == null) {
+            if (promote) {
+                totalMoves.add(new ChessMove(pos, upPos, PieceType.QUEEN));
+                totalMoves.add(new ChessMove(pos, upPos, PieceType.ROOK));
+                totalMoves.add(new ChessMove(pos, upPos, PieceType.BISHOP));
+                totalMoves.add(new ChessMove(pos, upPos, PieceType.KNIGHT));
+            } else {
+                totalMoves.add(new ChessMove(pos, upPos, null));
+            }
+            if (pos.getRow() == homeRow) {
+                if (board.getPiece(superUpPos) == null) {
+                    totalMoves.add(new ChessMove(pos, superUpPos, null));
                 }
             }
-
-            ChessPosition leftPos = new ChessPosition(pos.getRow() - 1, pos.getColumn() - 1);
-            if (board.getPiece(leftPos).getTeamColor() == ChessGame.TeamColor.WHITE) {
-                if (promote) {
-                    totalMoves.add(new ChessMove(pos, leftPos, PieceType.QUEEN));
-                    totalMoves.add(new ChessMove(pos, leftPos, PieceType.ROOK));
-                    totalMoves.add(new ChessMove(pos, leftPos, PieceType.BISHOP));
-                    totalMoves.add(new ChessMove(pos, leftPos, PieceType.KNIGHT));
-                } else {
-                    totalMoves.add(new ChessMove(pos, leftPos, null));
+        }
+        // Check if the pawn can capture to one side
+        if (leftPos != null) {
+            if (board.getPiece(leftPos) != null) {
+                if (board.getPiece(leftPos).getTeamColor() != color) {
+                    if (promote) {
+                        totalMoves.add(new ChessMove(pos, leftPos, PieceType.QUEEN));
+                        totalMoves.add(new ChessMove(pos, leftPos, PieceType.ROOK));
+                        totalMoves.add(new ChessMove(pos, leftPos, PieceType.BISHOP));
+                        totalMoves.add(new ChessMove(pos, leftPos, PieceType.KNIGHT));
+                    } else {
+                        totalMoves.add(new ChessMove(pos, leftPos, null));
+                    }
                 }
             }
-
-            ChessPosition rightPos = new ChessPosition(pos.getRow() - 1, pos.getColumn() + 1);
-            if (board.getPiece(rightPos).getTeamColor() == ChessGame.TeamColor.WHITE) {
-                if (promote) {
-                    totalMoves.add(new ChessMove(pos, rightPos, PieceType.QUEEN));
-                    totalMoves.add(new ChessMove(pos, rightPos, PieceType.ROOK));
-                    totalMoves.add(new ChessMove(pos, rightPos, PieceType.BISHOP));
-                    totalMoves.add(new ChessMove(pos, rightPos, PieceType.KNIGHT));
-                } else {
-                    totalMoves.add(new ChessMove(pos, rightPos, null));
+        }
+        // Check if the pawn can capture to the other side
+        if (rightPos != null) {
+            if (board.getPiece(rightPos) != null) {
+                if (board.getPiece(rightPos).getTeamColor() != color) {
+                    if (promote) {
+                        totalMoves.add(new ChessMove(pos, rightPos, PieceType.QUEEN));
+                        totalMoves.add(new ChessMove(pos, rightPos, PieceType.ROOK));
+                        totalMoves.add(new ChessMove(pos, rightPos, PieceType.BISHOP));
+                        totalMoves.add(new ChessMove(pos, rightPos, PieceType.KNIGHT));
+                    } else {
+                        totalMoves.add(new ChessMove(pos, rightPos, null));
+                    }
                 }
             }
         }
