@@ -42,11 +42,7 @@ public class ChessBoard {
      */
     public void resetBoard() {
         // Clear the board entirely
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                addPiece(new ChessPosition(row, col), null);
-            }
-        }
+        chessBoard = new ChessPiece[8][8];
 
         // Add the pawns
         for (int col = 1; col <= 8; col++) {
@@ -73,6 +69,13 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 6), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
         addPiece(new ChessPosition(8, 7), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "chessBoard=" + Arrays.toString(chessBoard) +
+                '}';
     }
 
     @Override

@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -14,7 +15,7 @@ public class ChessGame {
     TeamColor whichTeamTurn;
 
     public ChessGame() {
-
+        chessBoard.resetBoard();
     }
 
     /**
@@ -49,7 +50,16 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        // Find out which piece is in that spot
+        ChessPiece piece = chessBoard.getPiece(startPosition);
+        // Return null if there is no piece there
+        if (piece == null) {
+            return null;
+        }
+        // Find the moves that are possible but not necessarily legal
+        // Remove the illegal moves ie the ones that put you in check
+        // Return all legal moves
+        return piece.pieceMoves(chessBoard, startPosition);
     }
 
     /**
@@ -102,8 +112,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-
-        throw new RuntimeException("Not implemented");
+        this.chessBoard = board;
     }
 
     /**
@@ -112,8 +121,15 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
+        return this.chessBoard;
+    }
 
-        throw new RuntimeException("Not implemented");
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "chessBoard=" + chessBoard +
+                ", whichTeamTurn=" + whichTeamTurn +
+                '}';
     }
 
     @Override
