@@ -48,7 +48,7 @@ public class ChessPiece {
     /**
      * Generate a collection of all repeated moves in a direction
      */
-    private Collection<ChessMove> genericMove(ChessBoard board, ChessPosition pos, int moveUp, int moveRight, ChessGame.TeamColor color, int numRepeat, PieceType promotion) {
+    private Collection<ChessMove> genericMove(ChessBoard board, ChessPosition startPos, ChessPosition pos, int moveUp, int moveRight, int numRepeat, PieceType promotion) {
         Collection<ChessMove> foundMoves = new HashSet<>();
         // Recursion exit condition
         if (numRepeat < 0) {
@@ -62,22 +62,23 @@ public class ChessPiece {
         int newCol = col + moveRight;
 
         // Check it is still on the board
-        if (newRow > 8 || newRow < 1) {
-            return foundMoves;
-        }
-        if (newCol > 8 || newCol < 1) {
+        if (newRow > 8 || newRow < 1 || newCol > 8 || newCol < 1) {
             return foundMoves;
         }
 
         // Find if we can add the new moves
         ChessPosition newPos = new ChessPosition(newRow, newCol);
-        if (board.getPiece(newPos) != null) {
+        if (board.getPiece(newPos) == null) {
+            // Add moves
+            foundMoves.add(new ChessMove(startPos, newPos, promotion));
+            foundMoves.addAll(genericMove(board, startPos, newPos, moveUp, moveRight, numRepeat - 1, promotion));
+        } else {
             ChessGame.TeamColor colorAtNew = board.getPiece(newPos).getTeamColor();
-            if (colorAtNew != color) {
-                foundMoves.add(new ChessMove(pos, newPos, promotion));
-                foundMoves.addAll(genericMove(board, newPos, moveUp, moveRight, color, numRepeat - 1, promotion));
+            if (colorAtNew != board.getPiece(startPos).getTeamColor()) {
+                foundMoves.add(new ChessMove(startPos, newPos, promotion));
             }
         }
+
         return foundMoves;
     }
 
@@ -88,8 +89,7 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color) {
-
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> totalMoves = new HashSet<>();
         /*
         totalMoves.addAll(genericMove(board, pos, 1, 1, color, 0, null));
@@ -100,17 +100,16 @@ public class ChessPiece {
         totalMoves.addAll(genericMove(board, pos, -1, 1, color, 0, null));
         totalMoves.addAll(genericMove(board, pos, -1, 0, color, 0, null));
         totalMoves.addAll(genericMove(board, pos, -1, -1, color, 0, null));
-*/
+        */
 
         int[] moveVector = {-1, 0, 1};
         for (int i : moveVector) {
             for (int j : moveVector) {
                 if (i != 0 || j != 0) {
-                    totalMoves.addAll(genericMove(board, pos, i, j, color, 0, null));
+                    totalMoves.addAll(genericMove(board, pos, pos, i, j, 0, null));
                 }
             }
         }
-
 
         return totalMoves;
     }
@@ -122,13 +121,13 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color) {
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> totalMoves = new HashSet<>();
         int[] moveVector = {-1, 0, 1};
         for (int i : moveVector) {
             for (int j : moveVector) {
                 if (i != 0 || j != 0) {
-                    totalMoves.addAll(genericMove(board, pos, i, j, color, 8, null));
+                    totalMoves.addAll(genericMove(board, pos, pos, i, j, 8, null));
                 }
             }
         }
@@ -142,12 +141,12 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color) {
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> totalMoves = new HashSet<>();
         int[] moveVector = {-1, 1};
         for (int i : moveVector) {
-            totalMoves.addAll(genericMove(board, pos, i, 0, color, 8, null));
-            totalMoves.addAll(genericMove(board, pos, 0, i, color, 8, null));
+            totalMoves.addAll(genericMove(board, pos, pos, i, 0, 8, null));
+            totalMoves.addAll(genericMove(board, pos, pos, 0, i, 8, null));
         }
         return totalMoves;
     }
@@ -159,11 +158,12 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color) {
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> totalMoves = new HashSet<>();
         int[] moveVector = {-1, 1};
         for (int i : moveVector) {
-            totalMoves.addAll(genericMove(board, pos, i, i, color, 8, null));
+            totalMoves.addAll(genericMove(board, pos, pos, i, 1, 8, null));
+            totalMoves.addAll(genericMove(board, pos, pos, i, -1, 8, null));
         }
         return totalMoves;
     }
@@ -171,14 +171,14 @@ public class ChessPiece {
     /**
      * Find the moves a Knight can make
      */
-    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color) {
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> totalMoves = new HashSet<>();
         int[] smallMove = {-1, 1};
         int[] bigMove = {-2, 2};
         for (int i : smallMove) {
             for (int j : bigMove) {
-                totalMoves.addAll(genericMove(board, pos, i, j, color, 0, null));
-                totalMoves.addAll(genericMove(board, pos, j, i, color, 0, null));
+                totalMoves.addAll(genericMove(board, pos, pos, i, j, 0, null));
+                totalMoves.addAll(genericMove(board, pos, pos, j, i, 0, null));
             }
         }
         return totalMoves;
@@ -191,9 +191,10 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color) {
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> totalMoves = new HashSet<>();
         boolean promote;
+        ChessGame.TeamColor color = board.getPiece(pos).getTeamColor();
         if (color == ChessGame.TeamColor.WHITE) {
             if (pos.getRow() == 7) {
                 promote = true;
@@ -292,23 +293,24 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> allMoves = new HashSet<ChessMove>();
         // Find what piece is moving
-        ChessPiece piece = board.getPiece(pos);
+        //ChessPiece piece = board.getPiece(pos);
+        ChessPiece piece = this;
         ChessGame.TeamColor color = piece.getTeamColor();
 
         if (piece.getPieceType() == null) {
             return allMoves;
         } else if (piece.getPieceType() == PieceType.KING) {
-            allMoves.addAll(kingMoves(board, pos, color));
+            allMoves.addAll(kingMoves(board, pos));
         } else if (piece.getPieceType() == PieceType.QUEEN) {
-            allMoves.addAll(queenMoves(board, pos, color));
+            allMoves.addAll(queenMoves(board, pos));
         } else if (piece.getPieceType() == PieceType.ROOK) {
-            allMoves.addAll(rookMoves(board, pos, color));
+            allMoves.addAll(rookMoves(board, pos));
         } else if (piece.getPieceType() == PieceType.BISHOP) {
-            allMoves.addAll(bishopMoves(board, pos, color));
+            allMoves.addAll(bishopMoves(board, pos));
         } else if (piece.getPieceType() == PieceType.KNIGHT) {
-            allMoves.addAll(knightMoves(board, pos, color));
+            allMoves.addAll(knightMoves(board, pos));
         } else if (piece.getPieceType() == PieceType.PAWN) {
-            allMoves.addAll(pawnMoves(board, pos, color));
+            allMoves.addAll(pawnMoves(board, pos));
         }
         return allMoves;
     }
