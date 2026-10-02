@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -73,8 +75,36 @@ public class ChessBoard {
 
     @Override
     public String toString() {
+        Map<ChessPiece,String> namesOfPieces = new HashMap<>();
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING), "K");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN), "Q");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK), "R");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP), "B");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT), "N");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN), "P");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING), "k");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN), "q");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK), "r");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP), "b");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT), "n");
+        namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), "p");
+
+        String string = "";
+        for (int row = 1; row < 9; row++) {
+            for (int col = 1; col < 9; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = this.getPiece(pos);
+                if (piece == null) {
+                    string = string.concat(".");
+                } else {
+                    string = string.concat(namesOfPieces.get(piece));
+                }
+            }
+            string = string.concat("/");
+        }
+
         return "ChessBoard{" +
-                "chessBoard=" + Arrays.toString(chessBoard) +
+                "chessBoard=" + string +
                 '}';
     }
 

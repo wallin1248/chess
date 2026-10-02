@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -35,10 +37,17 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return "ChessPosition{" +
-                "row=" + row +
-                ", col=" + col +
-                '}';
+        Map<Integer, String> rowNames = HashMap.newHashMap(8);
+        rowNames.put(1, "A");
+        rowNames.put(2, "B");
+        rowNames.put(3, "C");
+        rowNames.put(4, "D");
+        rowNames.put(5, "E");
+        rowNames.put(6, "F");
+        rowNames.put(7, "G");
+        rowNames.put(8, "H");
+
+        return rowNames.get(row) + col;
     }
 
     @Override
