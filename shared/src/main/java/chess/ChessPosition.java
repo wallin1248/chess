@@ -37,17 +37,17 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        Map<Integer, String> rowNames = HashMap.newHashMap(8);
-        rowNames.put(1, "A");
-        rowNames.put(2, "B");
-        rowNames.put(3, "C");
-        rowNames.put(4, "D");
-        rowNames.put(5, "E");
-        rowNames.put(6, "F");
-        rowNames.put(7, "G");
-        rowNames.put(8, "H");
+        Map<Integer, String> colNames = HashMap.newHashMap(8);
+        colNames.put(1, "A");
+        colNames.put(2, "B");
+        colNames.put(3, "C");
+        colNames.put(4, "D");
+        colNames.put(5, "E");
+        colNames.put(6, "F");
+        colNames.put(7, "G");
+        colNames.put(8, "H");
 
-        return rowNames.get(row) + col;
+        return colNames.get(col) + row;
     }
 
     @Override
