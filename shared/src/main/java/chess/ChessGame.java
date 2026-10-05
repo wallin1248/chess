@@ -71,6 +71,27 @@ public class ChessGame {
     }
 
     /**
+     * Forces a move in the chess game, regardless of legality
+     *
+     * @param move chess move to perform
+     */
+    private void forceMove(ChessMove move) {
+        // Find the piece at the location the move starts at
+        ChessPiece movingPiece = chessBoard.getPiece(move.getStartPosition());
+        // Make the move
+        chessBoard.addPiece(move.getStartPosition(), null);
+        chessBoard.addPiece(move.getEndPosition(), movingPiece);
+        // Set the team to the other side
+        TeamColor setTurn;
+        if (movingPiece.getTeamColor() == TeamColor.WHITE) {
+            setTurn = TeamColor.BLACK;
+        } else {
+            setTurn = TeamColor.WHITE;
+        }
+        setTeamTurn(setTurn);
+    }
+
+    /**
      * Makes a move in the chess game
      *
      * @param move chess move to perform
@@ -78,7 +99,15 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         // Find the piece at the location the move starts at
+        ChessPiece movingPiece = chessBoard.getPiece(move.getStartPosition());
+        // Check there actually is a piece there
+        if (movingPiece == null) {
+            throw new InvalidMoveException("There is no piece there to move");
+        }
         // Check it is on the right team
+        if (movingPiece.getTeamColor() != whichTeamTurn) {
+            throw new InvalidMoveException("Piece of wrong team tried to move");
+        }
         // Ensure the move is included in the validMoves function
         throw new RuntimeException("Not implemented");
     }
@@ -90,10 +119,9 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        // Make sure it is the given team's turn
         // Find every piece on the other team
         // Simulate every single move the other side can make
-        // If any of those moves ended on the king's current square, that's a capture and thus checkmate. Break and return True.
+        // If any of those moves capture opponent's king, break and return True.
         // If none meet that condition, it is not checkmate. Return false.
         throw new RuntimeException("Not implemented");
     }
@@ -107,9 +135,8 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         // Make sure it is the given team's turn
         // Make sure the king is in check
-        // Generate all possible moves for that team
-        // Remove the ones that still have the king in check
-        // If that removes all of them, it is checkmate
+        // Generate all validMoves for that team's pieces
+        // If none, it is checkmate
         throw new RuntimeException("Not implemented");
     }
 
@@ -123,9 +150,8 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         // Make sure it is the given team's turn
         // Make sure the king is NOT in check
-        // Generate all possible moves for that team
-        // Remove the ones that still have the king in check
-        // If that removes all of them, it is checkmate
+        // Generate all validMoves for that team's pieces
+        // If none, it is checkmate
         throw new RuntimeException("Not implemented");
     }
 
