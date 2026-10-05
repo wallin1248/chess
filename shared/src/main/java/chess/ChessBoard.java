@@ -89,18 +89,33 @@ public class ChessBoard {
         namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT), "n");
         namesOfPieces.put(new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN), "p");
 
-        String boardState = "";
+        StringBuilder boardState = new StringBuilder();
+        int blankSpaces = 1;
         for (int row = 1; row < 9; row++) {
             for (int col = 1; col < 9; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = this.getPiece(pos);
                 if (piece == null) {
-                    boardState = boardState.concat(".");
+                    if (col < 8) {
+                        ChessPosition newPos = new ChessPosition(row, col + 1);
+                        ChessPiece newPiece = this.getPiece(newPos);
+                        if (newPiece == null) {
+                            blankSpaces += 1;
+                        } else {
+                            boardState.append(blankSpaces);
+                            blankSpaces = 1;
+                        }
+                    } else {
+                        boardState.append(blankSpaces);
+                        blankSpaces = 1;
+                    }
                 } else {
-                    boardState = boardState.concat(namesOfPieces.get(piece));
+                    boardState.append(namesOfPieces.get(piece));
                 }
             }
-            boardState = boardState.concat("/");
+            if (row < 8) {
+                boardState.append("/");
+            }
         }
 
         return "ChessBoard{" + boardState + '}';
