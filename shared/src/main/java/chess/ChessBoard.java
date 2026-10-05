@@ -1,9 +1,6 @@
 package chess;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -36,6 +33,85 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return this.chessBoard[position.getRow() - 1][position.getColumn() - 1];
+    }
+
+    /**
+     * Gets all the pieces on the board of the given TeamColor
+     *
+     * @param color Which team color to find all the pieces of
+     * @return Either a collection of all positions that match, or null if no pieces remain
+     */
+    public Collection<ChessPosition> getMatchingPieces(ChessGame.TeamColor color) {
+        Collection<ChessPosition> matchingPieces = new HashSet<ChessPosition>();
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = this.getPiece(pos);
+                if (piece != null) {
+                    if (piece.getTeamColor() == color) {
+                        matchingPieces.add(pos);
+                    }
+                }
+            }
+        }
+        if (matchingPieces.isEmpty()) {
+            return null;
+        } else {
+            return matchingPieces;
+        }
+    }
+
+    /**
+     * Gets all the pieces on the board of the given PieceType
+     *
+     * @param type Which piece type to find all the pieces of
+     * @return Either a collection of all positions that match, or null if no pieces remain
+     */
+    public Collection<ChessPosition> getMatchingPieces(ChessPiece.PieceType type) {
+        Collection<ChessPosition> matchingPieces = new HashSet<ChessPosition>();
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = this.getPiece(pos);
+                if (piece != null) {
+                    if (piece.getPieceType() == type) {
+                        matchingPieces.add(pos);
+                    }
+                }
+            }
+        }
+        if (matchingPieces.isEmpty()) {
+            return null;
+        } else {
+            return matchingPieces;
+        }
+    }
+
+    /**
+     * Gets all the pieces that have that color and type
+     *
+     * @param color Which team color to find all the pieces of
+     * @param type  Which piece type to find all the pieces of
+     * @return Either a collection of all positions that match, or null if no pieces remain
+     */
+    public Collection<ChessPosition> getMatchingPieces(ChessGame.TeamColor color, ChessPiece.PieceType type) {
+        Collection<ChessPosition> matchingPieces = new HashSet<ChessPosition>();
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = this.getPiece(pos);
+                if (piece != null) {
+                    if (piece.getTeamColor() == color && piece.getPieceType() == type) {
+                        matchingPieces.add(pos);
+                    }
+                }
+            }
+        }
+        if (matchingPieces.isEmpty()) {
+            return null;
+        } else {
+            return matchingPieces;
+        }
     }
 
     /**
