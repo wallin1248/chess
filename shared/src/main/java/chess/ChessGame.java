@@ -141,7 +141,7 @@ public class ChessGame {
         // Simulate every single move the other side can make
         for (ChessPosition pos : enemyTeamPositions) {
             ChessPiece piece = chessBoard.getPiece(pos);
-            Collection<ChessMove> validMoves =  piece.pieceMoves(chessBoard, pos);
+            Collection<ChessMove> validMoves = piece.pieceMoves(chessBoard, pos);
             for (ChessMove move : validMoves) {
                 // If any of those moves capture opponent's king, break and return True.
                 if (kingPos.contains(move.getEndPosition())) {
@@ -161,10 +161,24 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         // Make sure it is the given team's turn
+        if (teamColor != whichTeamTurn) { return false; }
         // Make sure the king is in check
-        // Generate all validMoves for that team's pieces
+        if (!isInCheck(teamColor)) { return false; }
+        // Generate all validMoves for the team's pieces
+        Collection<ChessPosition> teamPositions = chessBoard.getMatchingPieces(teamColor);
+        Collection<ChessPosition> kingPos = chessBoard.getMatchingPieces(teamColor, ChessPiece.PieceType.KING);
+        // Simulate every single move the team can make
+        int totalMoves = 0;
+        for (ChessPosition pos : teamPositions) {
+            Collection<ChessMove> validMoves = validMoves(pos);
+            totalMoves += validMoves.size();
+        }
         // If none, it is checkmate
-        throw new RuntimeException("Not implemented");
+        if (totalMoves == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -176,10 +190,24 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         // Make sure it is the given team's turn
+        if (teamColor != whichTeamTurn) { return false; }
         // Make sure the king is NOT in check
-        // Generate all validMoves for that team's pieces
+        if (isInCheck(teamColor)) { return false; }
+        // Generate all validMoves for the team's pieces
+        Collection<ChessPosition> teamPositions = chessBoard.getMatchingPieces(teamColor);
+        Collection<ChessPosition> kingPos = chessBoard.getMatchingPieces(teamColor, ChessPiece.PieceType.KING);
+        // Simulate every single move the team can make
+        int totalMoves = 0;
+        for (ChessPosition pos : teamPositions) {
+            Collection<ChessMove> validMoves = validMoves(pos);
+            totalMoves += validMoves.size();
+        }
         // If none, it is checkmate
-        throw new RuntimeException("Not implemented");
+        if (totalMoves == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
