@@ -64,7 +64,13 @@ public class ChessGame {
         for (ChessMove move : allMoves) {
             // Create a fake board to simulate this move being made
             ChessGame newGame = new ChessGame();
-            newGame.chessBoard = this.chessBoard;
+            for (int row = 1; row < 9; row++) {
+                for (int col = 1; col < 9; col++) {
+                    ChessPosition pos = new ChessPosition(row, col);
+                    ChessPiece piece1 = chessBoard.getPiece(pos);
+                    newGame.chessBoard.addPiece(pos, piece1);
+                }
+            }
             newGame.forceMove(move);
             // If the king not in check, it's a valid move
             if (!newGame.isInCheck(piece.getTeamColor())) {
@@ -85,7 +91,12 @@ public class ChessGame {
         ChessPiece movingPiece = chessBoard.getPiece(move.getStartPosition());
         // Make the move
         chessBoard.addPiece(move.getStartPosition(), null);
-        chessBoard.addPiece(move.getEndPosition(), movingPiece);
+        if (move.getPromotionPiece() == null) {
+            chessBoard.addPiece(move.getEndPosition(), movingPiece);
+        } else {
+            ChessPiece promotedPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
+            chessBoard.addPiece(move.getEndPosition(), promotedPiece);
+        }
         // Set the team to the other side
         TeamColor setTurn;
         if (movingPiece != null) {
