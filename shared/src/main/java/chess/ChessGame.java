@@ -11,12 +11,14 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessGame {
-    ChessBoard chessBoard;
+    ChessBoard chessBoard = new ChessBoard();
     TeamColor whichTeamTurn;
 
     public ChessGame() {
         chessBoard.resetBoard();
+        whichTeamTurn = TeamColor.WHITE;
     }
+
     /**
      * @return Which team's turn it is
      */
@@ -49,6 +51,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        Collection<ChessMove> possibleMoves = new HashSet<ChessMove>();
         // Find out which piece is in that spot
         ChessPiece piece = chessBoard.getPiece(startPosition);
         // Return null if there is no piece there
@@ -60,14 +63,16 @@ public class ChessGame {
         // Remove the illegal moves ie the ones that put you in check
         for (ChessMove move : allMoves) {
             // Create a fake board to simulate this move being made
-            ChessBoard newBoard = this.getBoard();
-            newBoard.addPiece(move.getStartPosition(), null);
-            newBoard.addPiece(move.getEndPosition(), chessBoard.getPiece(move.getStartPosition()));
-            // Check if the king is in check
-
+            ChessGame newGame = new ChessGame();
+            newGame.chessBoard = this.chessBoard;
+            newGame.forceMove(move);
+            // If the king not in check, it's a valid move
+            if (!newGame.isInCheck(piece.getTeamColor())) {
+                possibleMoves.add(move);
+            }
         }
         // Return all legal moves
-        return piece.pieceMoves(chessBoard, startPosition);
+        return possibleMoves;
     }
 
     /**
@@ -84,11 +89,10 @@ public class ChessGame {
         // Set the team to the other side
         TeamColor setTurn;
         if (movingPiece.getTeamColor() == TeamColor.WHITE) {
-            setTurn = TeamColor.BLACK;
+            this.setTeamTurn(TeamColor.BLACK);
         } else {
-            setTurn = TeamColor.WHITE;
+            this.setTeamTurn(TeamColor.WHITE);
         }
-        setTeamTurn(setTurn);
     }
 
     /**
@@ -106,10 +110,14 @@ public class ChessGame {
         }
         // Check it is on the right team
         if (movingPiece.getTeamColor() != whichTeamTurn) {
-            throw new InvalidMoveException("Piece of wrong team tried to move");
+            throw new InvalidMoveException("Wrong team tried to move");
         }
         // Ensure the move is included in the validMoves function
-        throw new RuntimeException("Not implemented");
+        if (validMoves(move.getStartPosition()).contains(move)) {
+            forceMove(move);
+        } else {
+            throw new InvalidMoveException("Not a legal move");
+        }
     }
 
     /**
@@ -120,10 +128,27 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         // Find every piece on the other team
+        TeamColor otherTeamColor;
+        if (teamColor == TeamColor.WHITE){
+            otherTeamColor = TeamColor.BLACK;
+        } else {
+            otherTeamColor = TeamColor.WHITE;
+        }
+        Collection<ChessPosition> enemyTeamPositions = chessBoard.getMatchingPieces(otherTeamColor);
+        Collection<ChessPosition> kingPos = chessBoard.getMatchingPieces(teamColor, ChessPiece.PieceType.KING);
         // Simulate every single move the other side can make
-        // If any of those moves capture opponent's king, break and return True.
+        for (ChessPosition pos : enemyTeamPositions) {
+            ChessPiece piece = chessBoard.getPiece(pos);
+            Collection<ChessMove> validMoves =  piece.pieceMoves(chessBoard, pos);
+            for (ChessMove move : validMoves) {
+                // If any of those moves capture opponent's king, break and return True.
+                if (kingPos.contains(move.getEndPosition())) {
+                    return true;
+                }
+            }
+        }
         // If none meet that condition, it is not checkmate. Return false.
-        throw new RuntimeException("Not implemented");
+        return false;
     }
 
     /**
