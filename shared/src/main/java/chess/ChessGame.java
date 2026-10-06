@@ -88,10 +88,12 @@ public class ChessGame {
         chessBoard.addPiece(move.getEndPosition(), movingPiece);
         // Set the team to the other side
         TeamColor setTurn;
-        if (movingPiece.getTeamColor() == TeamColor.WHITE) {
-            this.setTeamTurn(TeamColor.BLACK);
-        } else {
-            this.setTeamTurn(TeamColor.WHITE);
+        if (movingPiece != null) {
+            if (movingPiece.getTeamColor() == TeamColor.WHITE) {
+                this.setTeamTurn(TeamColor.BLACK);
+            } else {
+                this.setTeamTurn(TeamColor.WHITE);
+            }
         }
     }
 
