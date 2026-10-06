@@ -42,7 +42,7 @@ public class ChessBoard {
      * @return Either a collection of all positions that match, or null if no pieces remain
      */
     public Collection<ChessPosition> getMatchingPieces(ChessGame.TeamColor color) {
-        Collection<ChessPosition> matchingPieces = new HashSet<ChessPosition>();
+        Collection<ChessPosition> matchingPieces = new HashSet<>();
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
@@ -61,14 +61,15 @@ public class ChessBoard {
         }
     }
 
+    /*
     /**
      * Gets all the pieces on the board of the given PieceType
      *
      * @param type Which piece type to find all the pieces of
      * @return Either a collection of all positions that match, or null if no pieces remain
-     */
-    public Collection<ChessPosition> getMatchingPieces(ChessPiece.PieceType type) {
-        Collection<ChessPosition> matchingPieces = new HashSet<ChessPosition>();
+     * /
+     public Collection<ChessPosition> getMatchingPieces(ChessPiece.PieceType type) {
+        Collection<ChessPosition> matchingPieces = new HashSet<>();
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
@@ -86,6 +87,7 @@ public class ChessBoard {
             return matchingPieces;
         }
     }
+    */
 
     /**
      * Gets all the pieces that have that color and type
@@ -95,7 +97,7 @@ public class ChessBoard {
      * @return Either a collection of all positions that match, or null if no pieces remain
      */
     public Collection<ChessPosition> getMatchingPieces(ChessGame.TeamColor color, ChessPiece.PieceType type) {
-        Collection<ChessPosition> matchingPieces = new HashSet<ChessPosition>();
+        Collection<ChessPosition> matchingPieces = new HashSet<>();
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);

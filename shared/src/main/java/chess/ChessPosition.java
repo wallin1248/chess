@@ -38,14 +38,14 @@ public class ChessPosition {
     @Override
     public String toString() {
         Map<Integer, String> colNames = HashMap.newHashMap(8);
-        colNames.put(1, "A");
-        colNames.put(2, "B");
-        colNames.put(3, "C");
-        colNames.put(4, "D");
-        colNames.put(5, "E");
-        colNames.put(6, "F");
-        colNames.put(7, "G");
-        colNames.put(8, "H");
+        colNames.put(1, "a");
+        colNames.put(2, "b");
+        colNames.put(3, "c");
+        colNames.put(4, "d");
+        colNames.put(5, "e");
+        colNames.put(6, "f");
+        colNames.put(7, "g");
+        colNames.put(8, "h");
 
         return colNames.get(col) + row;
     }

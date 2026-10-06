@@ -91,16 +91,6 @@ public class ChessPiece {
      */
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> totalMoves = new HashSet<>();
-        /*
-        totalMoves.addAll(genericMove(board, pos, 1, 1, color, 0, null));
-        totalMoves.addAll(genericMove(board, pos, 1, 0, color, 0, null));
-        totalMoves.addAll(genericMove(board, pos, 1, -1, color, 0, null));
-        totalMoves.addAll(genericMove(board, pos, 0, 1, color, 0, null));
-        totalMoves.addAll(genericMove(board, pos, 0, -1, color, 0, null));
-        totalMoves.addAll(genericMove(board, pos, -1, 1, color, 0, null));
-        totalMoves.addAll(genericMove(board, pos, -1, 0, color, 0, null));
-        totalMoves.addAll(genericMove(board, pos, -1, -1, color, 0, null));
-        */
 
         int[] moveVector = {-1, 0, 1};
         for (int i : moveVector) {
@@ -292,11 +282,10 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
-        Collection<ChessMove> allMoves = new HashSet<ChessMove>();
+        Collection<ChessMove> allMoves = new HashSet<>();
         // Find what piece is moving
         //ChessPiece piece = board.getPiece(pos);
         ChessPiece piece = this;
-        ChessGame.TeamColor color = piece.getTeamColor();
 
         if (piece.getPieceType() == null) {
             return allMoves;
