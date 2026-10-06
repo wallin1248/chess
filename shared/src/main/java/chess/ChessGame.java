@@ -51,7 +51,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> possibleMoves = new HashSet<ChessMove>();
+        Collection<ChessMove> possibleMoves = new HashSet<>();
         // Find out which piece is in that spot
         ChessPiece piece = chessBoard.getPiece(startPosition);
         // Return null if there is no piece there
@@ -85,8 +85,9 @@ public class ChessGame {
      * Forces a move in the chess game, regardless of legality
      *
      * @param move chess move to perform
+     * @param setTurn determines if the turn should be changed or not as a result of this move. Defaults to false
      */
-    private void forceMove(ChessMove move) {
+    private void forceMove(ChessMove move, boolean setTurn) {
         // Find the piece at the location the move starts at
         ChessPiece movingPiece = chessBoard.getPiece(move.getStartPosition());
         // Make the move
@@ -98,14 +99,24 @@ public class ChessGame {
             chessBoard.addPiece(move.getEndPosition(), promotedPiece);
         }
         // Set the team to the other side
-        TeamColor setTurn;
-        if (movingPiece != null) {
-            if (movingPiece.getTeamColor() == TeamColor.WHITE) {
-                this.setTeamTurn(TeamColor.BLACK);
-            } else {
-                this.setTeamTurn(TeamColor.WHITE);
+        if (setTurn) {
+            if (movingPiece != null) {
+                if (movingPiece.getTeamColor() == TeamColor.WHITE) {
+                    this.setTeamTurn(TeamColor.BLACK);
+                } else {
+                    this.setTeamTurn(TeamColor.WHITE);
+                }
             }
         }
+    }
+
+    /**
+     * Forces a move in the chess game, regardless of legality
+     *
+     * @param move chess move to perform
+     */
+    private void forceMove(ChessMove move) {
+        forceMove(move, false);
     }
 
     /**
@@ -127,7 +138,7 @@ public class ChessGame {
         }
         // Ensure the move is included in the validMoves function
         if (validMoves(move.getStartPosition()).contains(move)) {
-            forceMove(move);
+            forceMove(move, true);
         } else {
             throw new InvalidMoveException("Not a legal move");
         }
@@ -177,7 +188,6 @@ public class ChessGame {
         if (!isInCheck(teamColor)) { return false; }
         // Generate all validMoves for the team's pieces
         Collection<ChessPosition> teamPositions = chessBoard.getMatchingPieces(teamColor);
-        Collection<ChessPosition> kingPos = chessBoard.getMatchingPieces(teamColor, ChessPiece.PieceType.KING);
         // Simulate every single move the team can make
         int totalMoves = 0;
         for (ChessPosition pos : teamPositions) {
@@ -185,11 +195,7 @@ public class ChessGame {
             totalMoves += validMoves.size();
         }
         // If none, it is checkmate
-        if (totalMoves == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (totalMoves == 0);
     }
 
     /**
@@ -206,7 +212,6 @@ public class ChessGame {
         if (isInCheck(teamColor)) { return false; }
         // Generate all validMoves for the team's pieces
         Collection<ChessPosition> teamPositions = chessBoard.getMatchingPieces(teamColor);
-        Collection<ChessPosition> kingPos = chessBoard.getMatchingPieces(teamColor, ChessPiece.PieceType.KING);
         // Simulate every single move the team can make
         int totalMoves = 0;
         for (ChessPosition pos : teamPositions) {
@@ -214,11 +219,7 @@ public class ChessGame {
             totalMoves += validMoves.size();
         }
         // If none, it is checkmate
-        if (totalMoves == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (totalMoves == 0);
     }
 
     /**
